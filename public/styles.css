@@ -19,10 +19,11 @@ body {
   background: var(--bg);
   color: var(--gray-900);
   -webkit-font-smoothing: antialiased;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
-.survey-root { position:relative; width:100%; height:100dvh; overflow:hidden; }
+.survey-root { position:relative; width:100%; min-height:100dvh; overflow-x:hidden; overflow-y:auto; }
 
 .progress-bar-wrap {
   position:fixed; top:0; left:0; right:0; z-index:50;
@@ -47,7 +48,7 @@ body {
 .back-btn:hover { background:var(--gray-50); color:var(--gray-900); }
 
 .step-container {
-  width:100%; height:100%; display:flex; align-items:center; justify-content:center;
+  width:100%; min-height:100dvh; display:flex; align-items:center; justify-content:center;
 }
 
 @keyframes slideUp {
@@ -72,7 +73,7 @@ body {
 
 .field-layout {
   display:flex; flex-direction:column; align-items:flex-start;
-  width:100%; max-width:600px; padding:5rem 1.5rem 2rem;
+  width:100%; max-width:600px; padding:clamp(2rem, 6dvh, 5rem) 1.5rem clamp(1rem, 2dvh, 2rem);
 }
 .step-counter {
   font-size:0.8rem; font-weight:600; color:var(--green-600);
@@ -373,8 +374,16 @@ body {
   margin-top:0.6rem; font-style:italic;
 }
 
+@media (max-height:750px) {
+  .field-layout { padding:clamp(1.5rem, 4dvh, 3rem) 1.5rem 1rem; }
+  .card-select-grid { gap:5px; }
+  .card-select-item { padding:0.6rem 0.85rem; border-radius:10px; font-size:0.92rem; }
+  .card-select-letter { width:24px; height:24px; border-radius:6px; font-size:0.7rem; }
+  .back-btn { top:10px; }
+}
+
 @media (max-width:480px) {
-  .field-layout { padding:4.5rem 1.25rem 1.5rem; }
+  .field-layout { padding:clamp(2rem, 5dvh, 4.5rem) 1.25rem 1.5rem; }
   .bipolar-scale { gap:4px; }
   .bipolar-btn { padding:10px 2px; min-height:56px; }
   .bipolar-num { font-size:0.9rem; }

@@ -111,10 +111,11 @@ function SurveyApp() {
           onChange={updateField('state')} onNext={goNext}
           placeholder="Type to search…" stepNum={3} totalSteps={totalInfo} />;
       case 4:
-        return <TextInputStep label="What city do you live in?"
-          value={formData.city} onChange={updateField('city')} onNext={goNext}
-          placeholder="e.g. Bengaluru, Mumbai…"
-          stepNum={4} totalSteps={totalInfo} />;
+        const cityOptions = CITIES_BY_STATE[formData.state] || [];
+        return <DropdownStep label="What city do you live in?"
+          options={cityOptions} value={formData.city}
+          onChange={updateField('city')} onNext={goNext}
+          placeholder="Type to search…" stepNum={4} totalSteps={totalInfo} />;
       case 5:
         return <CardSelectStep
           label="How many years of experience do you have?"
