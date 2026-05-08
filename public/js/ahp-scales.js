@@ -176,12 +176,8 @@ function GradientSlider({ catA, catB, pairIndex, totalPairs, value, onChange }) 
   const trackRef = React.useRef(null);
   const [dragging, setDragging] = React.useState(false);
   const [localVal, setLocalVal] = React.useState(value ?? 0);
-  const [hasInteracted, setHasInteracted] = React.useState(value != null);
 
-  React.useEffect(() => {
-    setLocalVal(value ?? 0);
-    setHasInteracted(value != null);
-  }, [catA.id, catB.id]);
+  React.useEffect(() => { setLocalVal(value ?? 0); }, [catA.id, catB.id, value]);
 
   const posToPercent = (p) => ((p + 4) / 8) * 100;
   const snapPositions = [-4,-3,-2,-1,0,1,2,3,4];
@@ -195,7 +191,6 @@ function GradientSlider({ catA, catB, pairIndex, totalPairs, value, onChange }) 
     const raw = (pct / 100) * 8 - 4;
     const snapped = snapPositions.reduce((a, b) => Math.abs(raw - a) < Math.abs(raw - b) ? a : b);
     setLocalVal(snapped);
-    setHasInteracted(true);
   };
 
   const startDrag = (e) => {
@@ -270,14 +265,8 @@ function GradientSlider({ catA, catB, pairIndex, totalPairs, value, onChange }) 
               ? `${catA.name}: ${labels[currentIdx].toLowerCase()} importance`
               : `${catB.name}: ${labels[currentIdx].toLowerCase()} importance`}
         </div>
-        {!hasInteracted && (
-          <p style={{ fontSize:'0.8rem', color:'var(--gray-400)', textAlign:'center', marginTop:'0.75rem' }}>
-            Drag the slider to make a selection
-          </p>
-        )}
         <button className="btn-continue" onClick={() => onChange(localVal)}
-          disabled={!hasInteracted}
-          style={{ marginTop:'1.25rem', alignSelf:'center', opacity: hasInteracted ? 1 : 0.4, cursor: hasInteracted ? 'pointer' : 'not-allowed' }}>
+          style={{ marginTop:'1.25rem', alignSelf:'center' }}>
           Confirm
         </button>
       </div>
