@@ -4,6 +4,10 @@ function ResultsScreen({ comparisons, formData }) {
   const [animate, setAnimate] = React.useState(false);
 
   React.useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
+
+  React.useEffect(() => {
     setTimeout(() => setAnimate(true), 300);
 
     const SAATY = [9,7,5,3,1,3,5,7,9];
