@@ -41,15 +41,28 @@ function FieldLayout({ label, sublabel, hint, stepNum, totalSteps, children }) {
 function TextInputStep({ label, sublabel, value, onChange, onNext, placeholder, type,
   optional, stepNum, totalSteps }) {
   const inputRef = React.useRef(null);
+  const [touched, setTouched] = React.useState(false);
   React.useEffect(() => { setTimeout(() => inputRef.current?.focus(), 400); }, []);
-  const canProceed = optional || value.trim().length > 0;
+
+  const isEmail = type === 'email';
+  const validEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
+  const canProceed = optional ? true : (isEmail ? validEmail : value.trim().length > 0);
+  const showError = isEmail && touched && value.trim().length > 0 && !validEmail;
+
   const handleKey = (e) => { if (e.key === 'Enter' && canProceed) onNext(); };
 
   return (
     <FieldLayout label={label} sublabel={sublabel} stepNum={stepNum} totalSteps={totalSteps}
       hint={optional ? "Optional — press Enter or tap Continue to skip" : "Press Enter ↵ to continue"}>
       <input ref={inputRef} type={type||'text'} className="text-input" value={value}
-        onChange={e => onChange(e.target.value)} onKeyDown={handleKey} placeholder={placeholder||''} />
+        onChange={e => { onChange(e.target.value); setTouched(true); }}
+        onKeyDown={handleKey} placeholder={placeholder||''}
+        style={showError ? { borderColor:'#DC2626' } : {}} />
+      {showError && (
+        <p style={{ color:'#DC2626', fontSize:'0.8rem', marginTop:'0.4rem' }}>
+          Please enter a valid email address.
+        </p>
+      )}
       <button className="btn-continue" onClick={onNext} disabled={!canProceed}
         style={{ marginTop:'1.25rem' }}>
         Continue
