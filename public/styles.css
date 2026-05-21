@@ -231,7 +231,7 @@ body {
   80%      { transform:translate(-50%,-50%) scale(1); }
 }
 .slider-thumb.nudge {
-  animation: sliderNudge 1.8s ease-in-out 0.8s 1;
+  animation: sliderNudge 1.8s ease-in-out 6s 1;
 }
 .slider-direction {
   display:flex; justify-content:space-between; margin-top:0.5rem;
