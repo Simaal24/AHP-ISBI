@@ -12,23 +12,22 @@ function BackButton({ onClick, visible }) {
   return (
     <button className={`back-btn ${visible ? 'visible' : ''}`}
       onClick={onClick} aria-label="Go back" disabled={!visible}>
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-        strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+        strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
         <line x1="19" y1="12" x2="5" y2="12" /><polyline points="12 19 5 12 12 5" />
       </svg>
+      <span className="back-btn-label">Back</span>
     </button>
   );
 }
 
 function SurveyApp() {
-  const scaleStyle = 'slider';
-
   const [step, setStep] = React.useState(0);
   const [dir, setDir] = React.useState('forward');
   const [animKey, setAnimKey] = React.useState(0);
   const [formData, setFormData] = React.useState({
     name:'', email:'', state:'', city:'',
-    experience:'', relationship:'', organization:''
+    education:'', relationship:'', experience:'', familiarity:''
   });
   const [comparisons, setComparisons] = React.useState({});
 
@@ -42,9 +41,10 @@ function SurveyApp() {
   const stepRef = React.useRef(step);
   React.useEffect(() => { stepRef.current = step; }, [step]);
 
-  const TOTAL_STEPS = 25;
+  const TOTAL_STEPS = 26;
   const AHP_START = 9;
-  const AHP_END = 23;
+  const MIDWAY_STEP = 16;   // after first 7 comparisons
+  const AHP_END = 24;
 
   const progress = step <= 0 ? 0 : step >= TOTAL_STEPS - 1 ? 1 :
     (step - 1) / (TOTAL_STEPS - 3);
@@ -96,52 +96,56 @@ function SurveyApp() {
       case 0:
         return <WelcomeScreen onBegin={goNext} />;
       case 1:
-        return <TextInputStep label="What's your full name?"
-          value={formData.name} onChange={updateField('name')} onNext={goNext}
-          placeholder="Type your name…" stepNum={1} totalSteps={totalInfo} />;
+        return <NameEmailStep name={formData.name} email={formData.email}
+          onChangeName={updateField('name')} onChangeEmail={updateField('email')}
+          onNext={goNext} stepNum={1} totalSteps={totalInfo} />;
       case 2:
-        return <TextInputStep label="What's your email address?"
-          sublabel="We'll only use this to follow up if needed."
-          value={formData.email} onChange={updateField('email')} onNext={goNext}
-          placeholder="you@example.com" type="email"
-          stepNum={2} totalSteps={totalInfo} />;
-      case 3:
         return <DropdownStep label="Which state or territory are you in?"
           options={INDIAN_STATES} value={formData.state}
           onChange={updateField('state')} onNext={goNext}
-          placeholder="Type to search…" stepNum={3} totalSteps={totalInfo} />;
-      case 4:
+          placeholder="Type to search…" stepNum={2} totalSteps={totalInfo} />;
+      case 3:
         const cityOptions = CITIES_BY_STATE[formData.state] || [];
         return <DropdownStep label="What city do you live in?"
           options={cityOptions} value={formData.city}
           onChange={updateField('city')} onNext={goNext}
-          placeholder="Type to search…" stepNum={4} totalSteps={totalInfo} />;
+          placeholder="Type to search…" stepNum={3} totalSteps={totalInfo} />;
+      case 4:
+        return <CardSelectStep
+          label="Highest level of education completed?"
+          options={EDUCATION_LEVELS} value={formData.education}
+          onChange={updateField('education')} onNext={goNext}
+          stepNum={4} totalSteps={totalInfo} />;
       case 5:
         return <CardSelectStep
-          label="How many years of experience do you have?"
-          sublabel="In real estate, construction, sustainability, or related fields"
-          options={EXPERIENCE_RANGES} value={formData.experience}
-          onChange={updateField('experience')} onNext={goNext}
-          stepNum={5} totalSteps={totalInfo} />;
-      case 6:
-        return <CardSelectStep
-          label="What best describes your relationship to real estate in India?"
+          label="What best describes your role?"
           options={RELATIONSHIP_OPTIONS.map(r => r.label)}
           value={formData.relationship}
           onChange={updateField('relationship')} onNext={goNext}
+          stepNum={5} totalSteps={totalInfo} />;
+      case 6:
+        return <CardSelectStep
+          label="Years of professional experience?"
+          sublabel="In real estate, construction, sustainability, or related fields"
+          options={EXPERIENCE_RANGES} value={formData.experience}
+          onChange={updateField('experience')} onNext={goNext}
           stepNum={6} totalSteps={totalInfo} />;
       case 7:
-        return <TextInputStep label="What's your organization or affiliation?"
-          value={formData.organization} onChange={updateField('organization')}
-          onNext={goNext} placeholder="e.g. company, university…"
-          optional stepNum={7} totalSteps={totalInfo} />;
+        return <CardSelectStep
+          label="How familiar are you with sustainability practices in Indian residential construction?"
+          options={FAMILIARITY_LEVELS} value={formData.familiarity}
+          onChange={updateField('familiarity')} onNext={goNext}
+          stepNum={7} totalSteps={totalInfo} />;
       case 8:
         return <ExplanationScreen relationship={formData.relationship} onNext={goNext} />;
+      case MIDWAY_STEP:
+        return <MidwayScreen comparisons={comparisons} onNext={goNext} />;
       case TOTAL_STEPS - 1:
         return <ResultsScreen comparisons={comparisons} formData={formData} />;
       default:
-        if (step >= AHP_START && step <= AHP_END) {
-          const displayIdx = step - AHP_START;
+        if ((step >= AHP_START && step < MIDWAY_STEP) || (step > MIDWAY_STEP && step <= AHP_END)) {
+          // displayIdx accounts for the midway screen inserted after comparison 6
+          const displayIdx = step < MIDWAY_STEP ? step - AHP_START : step - AHP_START - 1;
           const pairIdx = pairOrder[displayIdx];
           const [iA, iB] = PAIRS[pairIdx];
           const swapped = pairSwaps[displayIdx];
@@ -152,7 +156,6 @@ function SurveyApp() {
 
           return (
             <AHPComparison
-              scaleStyle={scaleStyle}
               catA={catA} catB={catB}
               pairIndex={displayIdx} totalPairs={PAIRS.length}
               value={displayVal}

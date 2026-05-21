@@ -38,33 +38,37 @@ function FieldLayout({ label, sublabel, hint, stepNum, totalSteps, children }) {
   );
 }
 
-function TextInputStep({ label, sublabel, value, onChange, onNext, placeholder, type,
-  optional, stepNum, totalSteps }) {
-  const inputRef = React.useRef(null);
-  const [touched, setTouched] = React.useState(false);
-  React.useEffect(() => { setTimeout(() => inputRef.current?.focus(), 400); }, []);
-
-  const isEmail = type === 'email';
-  const validEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
-  const canProceed = optional ? true : (isEmail ? validEmail : value.trim().length > 0);
-  const showError = isEmail && touched && value.trim().length > 0 && !validEmail;
-
+function NameEmailStep({ name, email, onChangeName, onChangeEmail, onNext, stepNum, totalSteps }) {
+  const nameRef = React.useRef(null);
+  React.useEffect(() => { setTimeout(() => nameRef.current?.focus(), 400); }, []);
+  const canProceed = name.trim().length > 0 && email.trim().length > 0;
   const handleKey = (e) => { if (e.key === 'Enter' && canProceed) onNext(); };
 
   return (
-    <FieldLayout label={label} sublabel={sublabel} stepNum={stepNum} totalSteps={totalSteps}
-      hint={optional ? "Optional — press Enter or tap Continue to skip" : "Press Enter ↵ to continue"}>
-      <input ref={inputRef} type={type||'text'} className="text-input" value={value}
-        onChange={e => { onChange(e.target.value); setTouched(true); }}
-        onKeyDown={handleKey} placeholder={placeholder||''}
-        style={showError ? { borderColor:'#DC2626' } : {}} />
-      {showError && (
-        <p style={{ color:'#DC2626', fontSize:'0.8rem', marginTop:'0.4rem' }}>
-          Please enter a valid email address.
-        </p>
-      )}
+    <FieldLayout label="Let's start with the basics" stepNum={stepNum} totalSteps={totalSteps}
+      hint="Press Enter ↵ to continue">
+      <div style={{ display:'flex', flexDirection:'column', gap:'1.25rem' }}>
+        <div>
+          <label style={{ fontSize:'0.8rem', fontWeight:600, color:'var(--gray-500)',
+            textTransform:'uppercase', letterSpacing:'0.04em', marginBottom:6, display:'block' }}>
+            Full name
+          </label>
+          <input ref={nameRef} type="text" className="text-input" value={name}
+            onChange={e => onChangeName(e.target.value)} onKeyDown={handleKey}
+            placeholder="Your name…" />
+        </div>
+        <div>
+          <label style={{ fontSize:'0.8rem', fontWeight:600, color:'var(--gray-500)',
+            textTransform:'uppercase', letterSpacing:'0.04em', marginBottom:6, display:'block' }}>
+            Email address
+          </label>
+          <input type="email" className="text-input" value={email}
+            onChange={e => onChangeEmail(e.target.value)} onKeyDown={handleKey}
+            placeholder="you@example.com" />
+        </div>
+      </div>
       <button className="btn-continue" onClick={onNext} disabled={!canProceed}
-        style={{ marginTop:'1.25rem' }}>
+        style={{ marginTop:'1.5rem' }}>
         Continue
         <span style={{ fontSize:'0.75rem', opacity:0.6, marginLeft:8 }}>↵</span>
       </button>
@@ -152,37 +156,34 @@ function ExplanationScreen({ relationship, onNext }) {
           marginBottom:'1rem', lineHeight:1.3 }}>
           How the next section works
         </h2>
-        <div style={{ fontSize:'clamp(0.95rem,2vw,1.1rem)', color:'var(--gray-700)', lineHeight:1.7 }}>
+        <div style={{ fontSize:'clamp(0.95rem,2vw,1.05rem)', color:'var(--gray-700)', lineHeight:1.7 }}>
           {isCitizen ? (
             <>
-              <p style={{ marginBottom:'1rem' }}>
-                You'll be shown pairs of sustainability categories — like
-                <strong> Energy & Climate</strong> versus <strong>Water Management</strong>.
+              <p style={{ marginBottom:'0.85rem' }}>
+                You'll compare pairs of sustainability categories — like
+                <strong> Energy & Climate</strong> vs <strong>Water Management</strong>.
+                For each, think about a home you'd live in year-round and pick whichever matters
+                more to your comfort, health, and well-being.
               </p>
-              <p style={{ marginBottom:'1rem' }}>
-                For each pair, think about a home you would live in year-round, across all seasons.
-                Consider which aspect would matter more to your everyday comfort, health, and long-term
-                well-being — not just what feels most urgent right now.
-              </p>
-              <p>
-                Pick which category matters more to you, then indicate how much more. There are no right
-                or wrong answers — we value your genuine perspective.
+              <p style={{ padding:'0.7rem 0.9rem', background:'var(--green-100)', borderRadius:10,
+                fontSize:'clamp(0.85rem,1.8vw,0.95rem)', color:'var(--green-800)', lineHeight:1.55 }}>
+                Tap or drag the slider to your answer — the center means <strong>"Equal"</strong>, which is perfectly valid.
+                Only move further from center when you genuinely feel strongly.
               </p>
             </>
           ) : (
             <>
-              <p style={{ marginBottom:'1rem' }}>
-                You'll be shown pairs of sustainability categories — like
-                <strong> Energy & Climate</strong> versus <strong>Water Management</strong>.
+              <p style={{ marginBottom:'0.85rem' }}>
+                You'll compare pairs of sustainability categories — like
+                <strong> Energy & Climate</strong> vs <strong>Water Management</strong>.
+                Drawing on your professional experience across projects and climates in India,
+                pick which matters more when judging how sustainable a residential project truly is.
               </p>
-              <p style={{ marginBottom:'1rem' }}>
-                Drawing on your professional experience across varied projects, climates, and site
-                conditions in India, consider which category of information matters most to you
-                when deciding how sustainable a residential project truly is.
-              </p>
-              <p>
-                Pick which category you consider more important, then indicate how much more.
-                There are 15 comparisons — it takes about 3 minutes.
+              <p style={{ padding:'0.7rem 0.9rem', background:'var(--green-100)', borderRadius:10,
+                fontSize:'clamp(0.85rem,1.8vw,0.95rem)', color:'var(--green-800)', lineHeight:1.55 }}>
+                Tap or drag the slider to your answer — the center means <strong>"Equal"</strong>, which is perfectly valid.
+                Only move further from center when you genuinely feel strongly.
+                15 comparisons, about 3 minutes.
               </p>
             </>
           )}
@@ -191,6 +192,69 @@ function ExplanationScreen({ relationship, onNext }) {
           style={{ marginTop:'2rem', fontSize:'1.05rem', padding:'0.9rem 2.5rem' }}>
           Start comparisons
         </button>
+      </div>
+    </div>
+  );
+}
+
+function MidwayScreen({ comparisons, onNext }) {
+  const results = computeAHP(comparisons);
+  const { weights, ranked } = results;
+
+  const [animate, setAnimate] = React.useState(false);
+  React.useEffect(() => { setTimeout(() => setAnimate(true), 150); }, []);
+
+  const remaining = PAIRS.length - Object.keys(comparisons).length;
+  const maxWeight = Math.max(...weights);
+
+  return (
+    <div className="midway-screen">
+      <div className="midway-inner">
+
+        {/* Left — heading + cta */}
+        <div className="midway-left">
+          <span className="step-counter" style={{ marginBottom:'0.75rem' }}>Halfway there</span>
+          <h2 style={{ fontSize:'clamp(1.4rem,3vw,2rem)', fontWeight:700,
+            color:'var(--green-900)', lineHeight:1.25, marginBottom:'0.75rem' }}>
+            A snapshot of your priorities
+          </h2>
+          <p style={{ fontSize:'0.9rem', color:'var(--gray-500)', lineHeight:1.65,
+            marginBottom:'2rem' }}>
+            These weights will shift and sharpen with the remaining {remaining} comparisons.
+          </p>
+          <button className="btn-primary" onClick={onNext}
+            style={{ fontSize:'1rem', padding:'0.9rem 2rem' }}>
+            Keep going →
+          </button>
+        </div>
+
+        {/* Right — bar chart */}
+        <div className="midway-right">
+          {ranked.map(({ index, weight }, i) => {
+            const cat = CATEGORIES[index];
+            const pct = maxWeight > 0 ? (weight / maxWeight) * 100 : 100 / CATEGORIES.length;
+            const delay = `${0.05 + i * 0.08}s`;
+            return (
+              <div key={cat.id} className="midway-bar-row"
+                style={{ animation: animate ? `fadeSlideIn 0.4s ease-out ${delay} both` : 'none' }}>
+                <div className="midway-bar-meta">
+                  <div className="midway-bar-dot" style={{ background: cat.color }} />
+                  <span className="midway-bar-name">{cat.name}</span>
+                  <span className="midway-bar-pct">{Math.round(weight * 100)}%</span>
+                </div>
+                <div className="midway-bar-track">
+                  <div className="midway-bar-fill" style={{
+                    background: cat.color,
+                    opacity: 0.7,
+                    width: animate ? `${pct}%` : '0%',
+                    transitionDelay: delay,
+                  }} />
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
       </div>
     </div>
   );

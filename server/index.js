@@ -16,6 +16,8 @@ const client = new MongoClient(process.env.MONGO_URI, {
     strict: true,
     deprecationErrors: true,
   },
+  tls: true,
+  tlsAllowInvalidCertificates: true,
 });
 
 let db;
