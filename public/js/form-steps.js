@@ -92,9 +92,13 @@ function DropdownStep({ label, sublabel, options, value, onChange, onNext, place
   const inputRef = React.useRef(null);
   React.useEffect(() => { setTimeout(() => inputRef.current?.focus(), 400); }, []);
 
-  const filtered = options.filter(o =>
+  const hasOther = options.includes('Other');
+  const mainOptions = hasOther ? options.filter(o => o !== 'Other') : options;
+  const filtered = mainOptions.filter(o =>
     o.toLowerCase().includes(search.toLowerCase())
   );
+  // "Other" is always pinned at the bottom regardless of what's typed
+  const displayList = hasOther ? [...filtered, 'Other'] : filtered;
 
   const select = (opt) => {
     onChange(opt);
@@ -115,9 +119,9 @@ function DropdownStep({ label, sublabel, options, value, onChange, onNext, place
             if (e.key === 'Escape') setOpen(false);
           }}
         />
-        {open && filtered.length > 0 && (
+        {open && displayList.length > 0 && (
           <div className="dropdown-list">
-            {filtered.map(opt => (
+            {displayList.map(opt => (
               <button key={opt} className={`dropdown-item ${opt === value ? 'selected' : ''}`}
                 onClick={() => select(opt)}>
                 {opt}
