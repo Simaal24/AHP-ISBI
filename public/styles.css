@@ -251,6 +251,17 @@ body {
   100% { opacity:1; transform:scale(1); }
 }
 
+@keyframes ahpSlideFwd {
+  from { opacity:0; transform:translateX(40px); }
+  to   { opacity:1; transform:translateX(0); }
+}
+@keyframes ahpSlideBack {
+  from { opacity:0; transform:translateX(-40px); }
+  to   { opacity:1; transform:translateX(0); }
+}
+.ahp-slide-fwd  { animation: ahpSlideFwd  0.3s ease-out both; }
+.ahp-slide-back { animation: ahpSlideBack 0.3s ease-out both; }
+
 /* ── Midway screen ───────────────────────────────────────────── */
 .midway-screen {
   width:100%; min-height:100dvh;

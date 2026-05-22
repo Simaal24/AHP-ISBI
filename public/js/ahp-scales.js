@@ -39,6 +39,8 @@ function ComparisonHeader({ catA, catB, pairIndex, totalPairs }) {
 
 function GradientSlider({ catA, catB, pairIndex, totalPairs, value, onChange }) {
   const trackRef = React.useRef(null);
+  const sliderBodyRef = React.useRef(null);
+  const prevPairIndexRef = React.useRef(null);
   const [dragging, setDragging] = React.useState(false);
   const [localVal, setLocalVal] = React.useState(value ?? 0);
   const [confirmed, setConfirmed] = React.useState(false);
@@ -51,6 +53,14 @@ function GradientSlider({ catA, catB, pairIndex, totalPairs, value, onChange }) 
   React.useEffect(() => { localValRef.current = localVal; }, [localVal]);
 
   React.useEffect(() => {
+    const el = sliderBodyRef.current;
+    if (el && prevPairIndexRef.current !== null) {
+      const animClass = pairIndex > prevPairIndexRef.current ? 'ahp-slide-fwd' : 'ahp-slide-back';
+      el.classList.remove('ahp-slide-fwd', 'ahp-slide-back');
+      void el.offsetWidth; // force reflow so animation restarts
+      el.classList.add(animClass);
+    }
+    prevPairIndexRef.current = pairIndex;
     setLocalVal(value ?? 0);
     setConfirmed(false);
     setTouched(value != null);
@@ -129,7 +139,7 @@ function GradientSlider({ catA, catB, pairIndex, totalPairs, value, onChange }) 
   return (
     <div className="field-layout">
       <ComparisonHeader catA={catA} catB={catB} pairIndex={pairIndex} totalPairs={totalPairs} />
-      <div className="slider-container">
+      <div className="slider-container" ref={sliderBodyRef}>
         <div className="slider-cats">
           <CatCard cat={catA} side="left" small />
           <CatCard cat={catB} side="right" small />

@@ -49,10 +49,15 @@ function SurveyApp() {
   const progress = step <= 0 ? 0 : step >= TOTAL_STEPS - 1 ? 1 :
     (step - 1) / (TOTAL_STEPS - 3);
 
+  const isAHPStep = (s) => (s >= AHP_START && s < MIDWAY_STEP) || (s > MIDWAY_STEP && s <= AHP_END);
+
   const navigate = React.useCallback((newStep) => {
     const curStep = stepRef.current;
     setDir(newStep > curStep ? 'forward' : 'backward');
-    setAnimKey(k => k + 1);
+    // AHP→AHP: don't remount the step container — GradientSlider animates its own content
+    if (!(isAHPStep(curStep) && isAHPStep(newStep))) {
+      setAnimKey(k => k + 1);
+    }
     setStep(newStep);
   }, []);
 
