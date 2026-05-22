@@ -1,15 +1,3 @@
-var INDIAN_STATES = [
-  "Andhra Pradesh","Arunachal Pradesh","Assam","Bihar","Chhattisgarh",
-  "Goa","Gujarat","Haryana","Himachal Pradesh","Jharkhand",
-  "Karnataka","Kerala","Madhya Pradesh","Maharashtra","Manipur",
-  "Meghalaya","Mizoram","Nagaland","Odisha","Punjab",
-  "Rajasthan","Sikkim","Tamil Nadu","Telangana","Tripura",
-  "Uttar Pradesh","Uttarakhand","West Bengal",
-  "Andaman and Nicobar Islands","Chandigarh",
-  "Dadra and Nagar Haveli and Daman and Diu",
-  "Delhi","Jammu and Kashmir","Ladakh","Lakshadweep","Puducherry"
-].sort();
-
 var CITIES_BY_STATE = {
   "Andaman and Nicobar Islands": ["Port Blair"],
   "Andhra Pradesh": ["Adoni","Amalapuram","Anakapalle","Anantapur","Bapatla","Bhimavaram","Bobbili","Chilakaluripet","Chirala","Chittoor","Dharmavaram","Eluru","Gudivada","Gudur","Guntakal","Guntur","Hindupur","Kadapa","Kadiri","Kakinada","Kandukur","Kavali","Kurnool","Machilipatnam","Madanapalle","Mandapeta","Markapur","Nandyal","Narasaraopet","Nellore","Ongole","Proddatur","Puttur","Rajahmundry","Rajampet","Srikakulam","Srikalahasti","Tadepalligudem","Tadpatri","Tenali","Tirupati","Vijayawada","Visakhapatnam","Vizianagaram"],
@@ -91,6 +79,28 @@ var CATEGORIES = [
   { id: "operations", name: "Operations & Governance", color: "#475569",
     desc: "Think waste management, maintenance planning, performance monitoring" },
 ];
+
+// Flat alphabetical city list (all cities from every state, deduped) + "Other" at the end
+var ALL_CITIES = (function() {
+  var seen = {}, list = [];
+  Object.keys(CITIES_BY_STATE).forEach(function(state) {
+    CITIES_BY_STATE[state].forEach(function(city) {
+      if (!seen[city]) { seen[city] = true; list.push(city); }
+    });
+  });
+  list.sort();
+  list.push('Other');
+  return list;
+})();
+
+// Reverse lookup: city → state (used to auto-populate state from city selection)
+var STATE_BY_CITY = (function() {
+  var map = {};
+  Object.keys(CITIES_BY_STATE).forEach(function(state) {
+    CITIES_BY_STATE[state].forEach(function(city) { map[city] = state; });
+  });
+  return map;
+})();
 
 var PAIRS = [];
 for (var i = 0; i < CATEGORIES.length; i++) {

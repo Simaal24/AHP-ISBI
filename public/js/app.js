@@ -41,10 +41,10 @@ function SurveyApp() {
   const stepRef = React.useRef(step);
   React.useEffect(() => { stepRef.current = step; }, [step]);
 
-  const TOTAL_STEPS = 26;
-  const AHP_START = 9;
-  const MIDWAY_STEP = 16;   // after first 7 comparisons
-  const AHP_END = 24;
+  const TOTAL_STEPS = 25;
+  const AHP_START = 8;
+  const MIDWAY_STEP = 15;   // after first 7 comparisons
+  const AHP_END = 23;
 
   const progress = step <= 0 ? 0 : step >= TOTAL_STEPS - 1 ? 1 :
     (step - 1) / (TOTAL_STEPS - 3);
@@ -75,6 +75,12 @@ function SurveyApp() {
   const updateField = (field) => (val) =>
     setFormData(prev => ({ ...prev, [field]: val }));
 
+  // City selection also auto-derives state from the reverse lookup
+  const handleCityChange = (city) => {
+    const state = STATE_BY_CITY[city] || '';
+    setFormData(prev => ({ ...prev, city, state }));
+  };
+
   const makeComparisonHandler = React.useCallback((pairIdx, swapped) => (visualVal) => {
     const canonicalVal = swapped ? -visualVal : visualVal;
     setComparisons(prev => ({ ...prev, [pairIdx]: canonicalVal }));
@@ -96,7 +102,7 @@ function SurveyApp() {
   const animClass = dir === 'forward' ? 'anim-slide-up' : 'anim-slide-down';
 
   const renderStep = () => {
-    const totalInfo = 7;
+    const totalInfo = 6;
     switch (step) {
       case 0:
         return <WelcomeScreen onBegin={goNext} />;
@@ -105,43 +111,37 @@ function SurveyApp() {
           onChangeName={updateField('name')} onChangeEmail={updateField('email')}
           onNext={goNext} stepNum={1} totalSteps={totalInfo} />;
       case 2:
-        return <DropdownStep label="Which state or territory are you in?"
-          options={INDIAN_STATES} value={formData.state}
-          onChange={updateField('state')} onNext={goNext}
+        return <DropdownStep label="What city do you live in?"
+          options={ALL_CITIES} value={formData.city}
+          onChange={handleCityChange} onNext={goNext}
           placeholder="Type to search…" stepNum={2} totalSteps={totalInfo} />;
       case 3:
-        const cityOptions = CITIES_BY_STATE[formData.state] || [];
-        return <DropdownStep label="What city do you live in?"
-          options={cityOptions} value={formData.city}
-          onChange={updateField('city')} onNext={goNext}
-          placeholder="Type to search…" stepNum={3} totalSteps={totalInfo} />;
-      case 4:
         return <CardSelectStep
           label="Highest level of education completed?"
           options={EDUCATION_LEVELS} value={formData.education}
           onChange={updateField('education')} onNext={goNext}
-          stepNum={4} totalSteps={totalInfo} />;
-      case 5:
+          stepNum={3} totalSteps={totalInfo} />;
+      case 4:
         return <CardSelectStep
           label="What best describes your role?"
           options={RELATIONSHIP_OPTIONS.map(r => r.label)}
           value={formData.relationship}
           onChange={updateField('relationship')} onNext={goNext}
-          stepNum={5} totalSteps={totalInfo} />;
-      case 6:
+          stepNum={4} totalSteps={totalInfo} />;
+      case 5:
         return <CardSelectStep
           label="Years of professional experience?"
           sublabel="In real estate, construction, sustainability, or related fields"
           options={EXPERIENCE_RANGES} value={formData.experience}
           onChange={updateField('experience')} onNext={goNext}
-          stepNum={6} totalSteps={totalInfo} />;
-      case 7:
+          stepNum={5} totalSteps={totalInfo} />;
+      case 6:
         return <CardSelectStep
           label="How familiar are you with sustainability practices in Indian residential construction?"
           options={FAMILIARITY_LEVELS} value={formData.familiarity}
           onChange={updateField('familiarity')} onNext={goNext}
-          stepNum={7} totalSteps={totalInfo} />;
-      case 8:
+          stepNum={6} totalSteps={totalInfo} />;
+      case 7:
         return <ExplanationScreen relationship={formData.relationship} onNext={goNext} />;
       case MIDWAY_STEP:
         return <MidwayScreen comparisons={comparisons} onNext={goNext} />;
@@ -149,7 +149,7 @@ function SurveyApp() {
         return <ResultsScreen comparisons={comparisons} formData={formData} />;
       default:
         if ((step >= AHP_START && step < MIDWAY_STEP) || (step > MIDWAY_STEP && step <= AHP_END)) {
-          // displayIdx accounts for the midway screen inserted after comparison 6
+          // displayIdx accounts for the midway screen inserted after comparison 7
           const displayIdx = step < MIDWAY_STEP ? step - AHP_START : step - AHP_START - 1;
           const pairIdx = pairOrder[displayIdx];
           const [iA, iB] = PAIRS[pairIdx];
