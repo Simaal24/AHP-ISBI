@@ -52,7 +52,7 @@ var EXPERIENCE_RANGES = [
 ];
 
 var RELATIONSHIP_OPTIONS = [
-  { label: "Homebuyer / Resident", citizen: true },
+  { label: "Homebuyer, Owner, or Renter", citizen: true },
   { label: "Architect or Engineer", citizen: false },
   { label: "Sustainability Practitioner", citizen: false },
   { label: "Real Estate or Construction Professional", citizen: false },

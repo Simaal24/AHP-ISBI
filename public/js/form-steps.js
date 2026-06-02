@@ -38,33 +38,44 @@ function FieldLayout({ label, sublabel, hint, stepNum, totalSteps, children }) {
   );
 }
 
-function NameEmailStep({ name, email, onChangeName, onChangeEmail, onNext, stepNum, totalSteps }) {
+function AboutYouStep({ name, email, city, onChangeName, onChangeEmail, onChangeCity, onNext }) {
   const nameRef = React.useRef(null);
   const [emailTouched, setEmailTouched] = React.useState(false);
+  const [citySearch, setCitySearch] = React.useState(city || '');
+  const [cityOpen, setCityOpen] = React.useState(false);
   React.useEffect(() => { setTimeout(() => nameRef.current?.focus(), 400); }, []);
+
   const validEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
-  const canProceed = name.trim().length > 0 && validEmail;
+  const canProceed = name.trim().length > 0 && validEmail && city.trim().length > 0;
   const showEmailError = emailTouched && email.trim().length > 0 && !validEmail;
   const handleKey = (e) => { if (e.key === 'Enter' && canProceed) onNext(); };
 
+  const mainCities = ALL_CITIES.filter(c => c !== 'Other');
+  const filteredCities = mainCities.filter(c => c.toLowerCase().includes(citySearch.toLowerCase()));
+  const displayCities = [...filteredCities, 'Other'];
+
+  const selectCity = (opt) => {
+    onChangeCity(opt);
+    setCitySearch(opt);
+    setCityOpen(false);
+  };
+
+  const labelStyle = { fontSize:'0.8rem', fontWeight:600, color:'var(--gray-500)',
+    textTransform:'uppercase', letterSpacing:'0.04em', marginBottom:6, display:'block' };
+
   return (
-    <FieldLayout label="Let's start with the basics" stepNum={stepNum} totalSteps={totalSteps}
-      hint="Press Enter ↵ to continue">
-      <div style={{ display:'flex', flexDirection:'column', gap:'1.25rem' }}>
+    <div className="field-layout">
+      <h2 className="field-label">A little about you</h2>
+      <div style={{ marginTop:'1.5rem', width:'100%', maxWidth:520,
+        display:'flex', flexDirection:'column', gap:'1.5rem' }}>
         <div>
-          <label style={{ fontSize:'0.8rem', fontWeight:600, color:'var(--gray-500)',
-            textTransform:'uppercase', letterSpacing:'0.04em', marginBottom:6, display:'block' }}>
-            Full name
-          </label>
+          <label style={labelStyle}>Full name</label>
           <input ref={nameRef} type="text" className="text-input" value={name}
             onChange={e => onChangeName(e.target.value)} onKeyDown={handleKey}
             placeholder="Your name…" />
         </div>
         <div>
-          <label style={{ fontSize:'0.8rem', fontWeight:600, color:'var(--gray-500)',
-            textTransform:'uppercase', letterSpacing:'0.04em', marginBottom:6, display:'block' }}>
-            Email address
-          </label>
+          <label style={labelStyle}>Email address</label>
           <input type="email" className="text-input" value={email}
             onChange={e => { onChangeEmail(e.target.value); setEmailTouched(true); }}
             onKeyDown={handleKey} placeholder="you@example.com"
@@ -75,62 +86,37 @@ function NameEmailStep({ name, email, onChangeName, onChangeEmail, onNext, stepN
             </p>
           )}
         </div>
+        <div style={{ position:'relative' }}>
+          <label style={labelStyle}>City</label>
+          <input className="text-input" value={citySearch}
+            placeholder="Type to search…"
+            onChange={e => { setCitySearch(e.target.value); setCityOpen(true); onChangeCity(''); }}
+            onFocus={() => setCityOpen(true)}
+            onKeyDown={e => {
+              if (e.key === 'Enter' && filteredCities.length === 1) selectCity(filteredCities[0]);
+              if (e.key === 'Escape') setCityOpen(false);
+            }}
+          />
+          {cityOpen && displayCities.length > 0 && (
+            <div className="dropdown-list">
+              {displayCities.map(opt => (
+                <button key={opt}
+                  className={`dropdown-item ${opt === city ? 'selected' : ''}`}
+                  onMouseDown={e => { e.preventDefault(); selectCity(opt); }}>
+                  {opt}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
+      <p className="field-hint" style={{ marginTop:'1.25rem' }}>Press Enter ↵ to continue</p>
       <button className="btn-continue" onClick={onNext} disabled={!canProceed}
-        style={{ marginTop:'1.5rem' }}>
+        style={{ marginTop:'0.75rem' }}>
         Continue
         <span style={{ fontSize:'0.75rem', opacity:0.6, marginLeft:8 }}>↵</span>
       </button>
-    </FieldLayout>
-  );
-}
-
-function DropdownStep({ label, sublabel, options, value, onChange, onNext, placeholder,
-  stepNum, totalSteps }) {
-  const [search, setSearch] = React.useState('');
-  const [open, setOpen] = React.useState(false);
-  const inputRef = React.useRef(null);
-  React.useEffect(() => { setTimeout(() => inputRef.current?.focus(), 400); }, []);
-
-  const hasOther = options.includes('Other');
-  const mainOptions = hasOther ? options.filter(o => o !== 'Other') : options;
-  const filtered = mainOptions.filter(o =>
-    o.toLowerCase().includes(search.toLowerCase())
-  );
-  // "Other" is always pinned at the bottom regardless of what's typed
-  const displayList = hasOther ? [...filtered, 'Other'] : filtered;
-
-  const select = (opt) => {
-    onChange(opt);
-    setSearch(opt);
-    setOpen(false);
-    setTimeout(() => onNext(), 350);
-  };
-
-  return (
-    <FieldLayout label={label} sublabel={sublabel} stepNum={stepNum} totalSteps={totalSteps}>
-      <div style={{ position:'relative' }}>
-        <input ref={inputRef} className="text-input" value={search}
-          placeholder={placeholder||'Type to search…'}
-          onChange={e => { setSearch(e.target.value); setOpen(true); onChange(''); }}
-          onFocus={() => setOpen(true)}
-          onKeyDown={e => {
-            if (e.key === 'Enter' && filtered.length === 1) select(filtered[0]);
-            if (e.key === 'Escape') setOpen(false);
-          }}
-        />
-        {open && displayList.length > 0 && (
-          <div className="dropdown-list">
-            {displayList.map(opt => (
-              <button key={opt} className={`dropdown-item ${opt === value ? 'selected' : ''}`}
-                onClick={() => select(opt)}>
-                {opt}
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
-    </FieldLayout>
+    </div>
   );
 }
 
@@ -138,7 +124,7 @@ function CardSelectStep({ label, sublabel, options, value, onChange, onNext,
   stepNum, totalSteps }) {
   const select = (opt) => {
     onChange(opt);
-    setTimeout(() => onNext(), 350);
+    setTimeout(() => onNext(opt), 350);
   };
   const items = options.map(o => typeof o === 'string' ? { label: o } : o);
 

@@ -41,10 +41,13 @@ function SurveyApp() {
   const stepRef = React.useRef(step);
   React.useEffect(() => { stepRef.current = step; }, [step]);
 
-  const TOTAL_STEPS = 25;
-  const AHP_START = 8;
-  const MIDWAY_STEP = 15;   // after first 7 comparisons
-  const AHP_END = 23;
+  const relationshipRef = React.useRef(formData.relationship);
+  React.useEffect(() => { relationshipRef.current = formData.relationship; }, [formData.relationship]);
+
+  const TOTAL_STEPS = 24;
+  const AHP_START = 7;
+  const MIDWAY_STEP = 14;   // after first 7 comparisons
+  const AHP_END = 22;
 
   const progress = step <= 0 ? 0 : step >= TOTAL_STEPS - 1 ? 1 :
     (step - 1) / (TOTAL_STEPS - 3);
@@ -69,7 +72,11 @@ function SurveyApp() {
 
   const goBack = React.useCallback(() => {
     const cur = stepRef.current;
-    if (cur > 0 && cur < TOTAL_STEPS - 1) navigate(cur - 1);
+    if (cur > 0 && cur < TOTAL_STEPS - 1) {
+      // Citizens skipped step 4 (experience) going forward — skip it going back too
+      const isCitizen = RELATIONSHIP_OPTIONS.find(r => r.label === relationshipRef.current)?.citizen ?? true;
+      navigate(cur === 5 && isCitizen ? 3 : cur - 1);
+    }
   }, [navigate]);
 
   const updateField = (field) => (val) =>
@@ -102,46 +109,46 @@ function SurveyApp() {
   const animClass = dir === 'forward' ? 'anim-slide-up' : 'anim-slide-down';
 
   const renderStep = () => {
-    const totalInfo = 6;
+    const isCitizenRole = RELATIONSHIP_OPTIONS.find(r => r.label === formData.relationship)?.citizen ?? true;
     switch (step) {
       case 0:
         return <WelcomeScreen onBegin={goNext} />;
       case 1:
-        return <NameEmailStep name={formData.name} email={formData.email}
+        return <AboutYouStep
+          name={formData.name} email={formData.email} city={formData.city}
           onChangeName={updateField('name')} onChangeEmail={updateField('email')}
-          onNext={goNext} stepNum={1} totalSteps={totalInfo} />;
+          onChangeCity={handleCityChange} onNext={goNext} />;
       case 2:
-        return <DropdownStep label="What city do you live in?"
-          options={ALL_CITIES} value={formData.city}
-          onChange={handleCityChange} onNext={goNext}
-          placeholder="Type to search…" stepNum={2} totalSteps={totalInfo} />;
-      case 3:
         return <CardSelectStep
           label="Highest level of education completed?"
           options={EDUCATION_LEVELS} value={formData.education}
           onChange={updateField('education')} onNext={goNext}
-          stepNum={3} totalSteps={totalInfo} />;
-      case 4:
+          stepNum={1} totalSteps={4} />;
+      case 3:
         return <CardSelectStep
           label="What best describes your role?"
           options={RELATIONSHIP_OPTIONS.map(r => r.label)}
           value={formData.relationship}
-          onChange={updateField('relationship')} onNext={goNext}
-          stepNum={4} totalSteps={totalInfo} />;
-      case 5:
+          onChange={updateField('relationship')}
+          onNext={(selectedRole) => {
+            const isCitizen = RELATIONSHIP_OPTIONS.find(r => r.label === selectedRole)?.citizen ?? true;
+            navigate(isCitizen ? 5 : 4);
+          }}
+          stepNum={2} totalSteps={4} />;
+      case 4:
         return <CardSelectStep
           label="Years of professional experience?"
           sublabel="In real estate, construction, sustainability, or related fields"
           options={EXPERIENCE_RANGES} value={formData.experience}
           onChange={updateField('experience')} onNext={goNext}
-          stepNum={5} totalSteps={totalInfo} />;
-      case 6:
+          stepNum={3} totalSteps={4} />;
+      case 5:
         return <CardSelectStep
-          label="How familiar are you with sustainability practices in Indian residential construction?"
+          label="How familiar are you with sustainable or green building practices?"
           options={FAMILIARITY_LEVELS} value={formData.familiarity}
           onChange={updateField('familiarity')} onNext={goNext}
-          stepNum={6} totalSteps={totalInfo} />;
-      case 7:
+          stepNum={isCitizenRole ? 3 : 4} totalSteps={isCitizenRole ? 3 : 4} />;
+      case 6:
         return <ExplanationScreen relationship={formData.relationship} onNext={goNext} />;
       case MIDWAY_STEP:
         return <MidwayScreen comparisons={comparisons} onNext={goNext} />;
