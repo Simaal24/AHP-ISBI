@@ -50,10 +50,11 @@ function SurveyApp() {
   const AHP_END = 22;
 
   // Info screens: fill to 100% across steps 1–6
-  // AHP section: reset to 0% and fill based on comparisons answered
+  // AHP section: reset to 0% and fill based on step position (robust, can't go wrong)
+  const AHP_TOTAL_STEPS = AHP_END - AHP_START + 1; // 16 steps incl. midway
   const progress = step <= 0 ? 0
     : step < AHP_START ? step / (AHP_START - 1)
-    : Object.keys(comparisons).length / PAIRS.length;
+    : Math.min((step - AHP_START) / AHP_TOTAL_STEPS, 1);
 
   const isAHPStep = (s) => (s >= AHP_START && s < MIDWAY_STEP) || (s > MIDWAY_STEP && s <= AHP_END);
 
@@ -157,7 +158,10 @@ function SurveyApp() {
       case 6:
         return <ExplanationScreen relationship={formData.relationship} onNext={goNext} />;
       case MIDWAY_STEP:
-        return <MidwayScreen comparisons={comparisons} onNext={goNext} />;
+        return <MidwayScreen
+          doneCount={MIDWAY_STEP - AHP_START}
+          totalPairs={PAIRS.length}
+          onNext={goNext} />;
       case TOTAL_STEPS - 1:
         return <ResultsScreen comparisons={comparisons} formData={formData} />;
       default:

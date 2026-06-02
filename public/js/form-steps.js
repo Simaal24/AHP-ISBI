@@ -191,9 +191,9 @@ function ExplanationScreen({ relationship, onNext }) {
   );
 }
 
-function MidwayScreen({ comparisons, onNext }) {
-  const done = Object.keys(comparisons).length;
-  const total = PAIRS.length;
+function MidwayScreen({ doneCount, totalPairs, onNext }) {
+  const done = doneCount;
+  const total = totalPairs;
   const remaining = total - done;
 
   const [animate, setAnimate] = React.useState(false);
