@@ -1,18 +1,8 @@
-function ProgressBar({ infoProgress, ahpProgress, onAHP }) {
+function ProgressBar({ progress }) {
   return (
     <div className="progress-bar-wrap">
-      <div style={{ display:'flex', gap:4, height:'100%' }}>
-        <div style={{ flex:1 }}>
-          <div className="progress-bar-track" style={{ height:'100%' }}>
-            <div className="progress-bar-fill" style={{ width:`${infoProgress * 100}%` }} />
-          </div>
-        </div>
-        <div style={{ flex:2.5 }}>
-          <div className="progress-bar-track" style={{ height:'100%',
-            opacity: onAHP ? 1 : 0.35, transition:'opacity 0.4s' }}>
-            <div className="progress-bar-fill" style={{ width:`${ahpProgress * 100}%` }} />
-          </div>
-        </div>
+      <div className="progress-bar-track">
+        <div className="progress-bar-fill" style={{ width:`${progress * 100}%` }} />
       </div>
     </div>
   );
@@ -59,11 +49,11 @@ function SurveyApp() {
   const MIDWAY_STEP = 14;   // after first 7 comparisons
   const AHP_END = 22;
 
-  // Info bar: fills as they complete the 6 info screens (steps 1–6), stays full after
-  const infoProgress = step <= 0 ? 0 : step >= AHP_START ? 1 : step / (AHP_START - 1);
-  // AHP bar: fills based on comparisons answered (0–15), regardless of step
-  const ahpProgress = Object.keys(comparisons).length / PAIRS.length;
-  const onAHP = step >= AHP_START;
+  // Info screens: fill to 100% across steps 1–6
+  // AHP section: reset to 0% and fill based on comparisons answered
+  const progress = step <= 0 ? 0
+    : step < AHP_START ? step / (AHP_START - 1)
+    : Object.keys(comparisons).length / PAIRS.length;
 
   const isAHPStep = (s) => (s >= AHP_START && s < MIDWAY_STEP) || (s > MIDWAY_STEP && s <= AHP_END);
 
@@ -200,7 +190,7 @@ function SurveyApp() {
 
   return (
     <div className="survey-root">
-      {showProgress && <ProgressBar infoProgress={infoProgress} ahpProgress={ahpProgress} onAHP={onAHP} />}
+      {showProgress && <ProgressBar progress={progress} />}
       <BackButton onClick={goBack} visible={showBack} />
       <div key={animKey} className={`step-container ${animClass}`}>
         {renderStep()}
