@@ -1,8 +1,18 @@
-function ProgressBar({ progress }) {
+function ProgressBar({ infoProgress, ahpProgress, onAHP }) {
   return (
     <div className="progress-bar-wrap">
-      <div className="progress-bar-track">
-        <div className="progress-bar-fill" style={{ width:`${Math.max(0, progress * 100)}%` }} />
+      <div style={{ display:'flex', gap:4, height:'100%' }}>
+        <div style={{ flex:1 }}>
+          <div className="progress-bar-track" style={{ height:'100%' }}>
+            <div className="progress-bar-fill" style={{ width:`${infoProgress * 100}%` }} />
+          </div>
+        </div>
+        <div style={{ flex:2.5 }}>
+          <div className="progress-bar-track" style={{ height:'100%',
+            opacity: onAHP ? 1 : 0.35, transition:'opacity 0.4s' }}>
+            <div className="progress-bar-fill" style={{ width:`${ahpProgress * 100}%` }} />
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -49,8 +59,11 @@ function SurveyApp() {
   const MIDWAY_STEP = 14;   // after first 7 comparisons
   const AHP_END = 22;
 
-  const progress = step <= 0 ? 0 : step >= TOTAL_STEPS - 1 ? 1 :
-    (step - 1) / (TOTAL_STEPS - 3);
+  // Info bar: fills as they complete the 6 info screens (steps 1–6), stays full after
+  const infoProgress = step <= 0 ? 0 : step >= AHP_START ? 1 : step / (AHP_START - 1);
+  // AHP bar: fills based on comparisons answered (0–15), regardless of step
+  const ahpProgress = Object.keys(comparisons).length / PAIRS.length;
+  const onAHP = step >= AHP_START;
 
   const isAHPStep = (s) => (s >= AHP_START && s < MIDWAY_STEP) || (s > MIDWAY_STEP && s <= AHP_END);
 
@@ -126,7 +139,7 @@ function SurveyApp() {
           stepNum={1} totalSteps={4} />;
       case 3:
         return <CardSelectStep
-          label="What best describes your role?"
+          label="What best describes your relationship to real estate?"
           options={RELATIONSHIP_OPTIONS.map(r => r.label)}
           value={formData.relationship}
           onChange={updateField('relationship')}
@@ -184,7 +197,7 @@ function SurveyApp() {
 
   return (
     <div className="survey-root">
-      {showProgress && <ProgressBar progress={progress} />}
+      {showProgress && <ProgressBar infoProgress={infoProgress} ahpProgress={ahpProgress} onAHP={onAHP} />}
       <BackButton onClick={goBack} visible={showBack} />
       <div key={animKey} className={`step-container ${animClass}`}>
         {renderStep()}
