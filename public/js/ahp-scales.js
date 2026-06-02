@@ -175,7 +175,7 @@ function GradientSlider({ catA, catB, pairIndex, totalPairs, value, onChange }) 
           <span style={{ color:catA.color, fontSize:'0.75rem', fontWeight:500 }}>← {catA.name.split(' & ')[0]}</span>
           <span style={{ color:catB.color, fontSize:'0.75rem', fontWeight:500 }}>{catB.name.split(' & ')[0]} →</span>
         </div>
-        <div className="slider-result">
+        <div className="slider-result" style={{ color: localVal === 0 ? 'var(--gray-500)' : gradientColor }}>
           {confirmed ? (
             <span className="slider-confirmed">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--green-600)"
@@ -185,10 +185,14 @@ function GradientSlider({ catA, catB, pairIndex, totalPairs, value, onChange }) 
               </svg>
               Recorded
             </span>
-          ) : localVal === 0 ? "Both are equally important" :
-            isLeft
-              ? `${catA.name}: ${labels[currentIdx].toLowerCase()} importance`
-              : `${catB.name}: ${labels[currentIdx].toLowerCase()} importance`}
+          ) : localVal === 0
+            ? "Both are equally important"
+            : <span>
+                <strong>{isLeft ? catA.name : catB.name}</strong>
+                {' is '}
+                <strong style={{ fontSize:'1.05em' }}>~{saaty[currentIdx]}×</strong>
+                {' more important'}
+              </span>}
         </div>
         {isLearning && touched && !confirmed && (
           <button className="btn-primary" onClick={() => confirmValue(localVal)}

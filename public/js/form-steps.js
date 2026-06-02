@@ -178,11 +178,17 @@ function ExplanationScreen({ relationship, onNext }) {
                 For each, think about a home you'd live in year-round and pick whichever matters
                 more to your comfort, health, and well-being.
               </p>
-              <p style={{ padding:'0.7rem 0.9rem', background:'var(--green-100)', borderRadius:10,
-                fontSize:'clamp(0.85rem,1.8vw,0.95rem)', color:'var(--green-800)', lineHeight:1.55 }}>
-                Tap or drag the slider to your answer — the center means <strong>"Equal"</strong>, which is perfectly valid.
-                Only move further from center when you genuinely feel strongly.
-              </p>
+              <div style={{ padding:'0.85rem 1rem', background:'#FEF3C7',
+                border:'1px solid #FDE68A', borderRadius:10, lineHeight:1.6 }}>
+                <p style={{ fontSize:'clamp(0.88rem,1.9vw,0.97rem)', color:'#78350F',
+                  fontWeight:600, marginBottom:'0.35rem' }}>
+                  The slider has real meaning.
+                </p>
+                <p style={{ fontSize:'clamp(0.83rem,1.7vw,0.92rem)', color:'#92400E' }}>
+                  "Moderate" ≈ <strong>3× more important</strong>. "Strong" ≈ <strong>5×</strong>. "Extreme" ≈ <strong>9×</strong>.
+                  Use Equal freely — only move further when you genuinely feel that gap exists.
+                </p>
+              </div>
             </>
           ) : (
             <>
@@ -192,12 +198,18 @@ function ExplanationScreen({ relationship, onNext }) {
                 Drawing on your professional experience across projects and climates in India,
                 pick which matters more when judging how sustainable a residential project truly is.
               </p>
-              <p style={{ padding:'0.7rem 0.9rem', background:'var(--green-100)', borderRadius:10,
-                fontSize:'clamp(0.85rem,1.8vw,0.95rem)', color:'var(--green-800)', lineHeight:1.55 }}>
-                Tap or drag the slider to your answer — the center means <strong>"Equal"</strong>, which is perfectly valid.
-                Only move further from center when you genuinely feel strongly.
-                15 comparisons, about 3 minutes.
-              </p>
+              <div style={{ padding:'0.85rem 1rem', background:'#FEF3C7',
+                border:'1px solid #FDE68A', borderRadius:10, lineHeight:1.6 }}>
+                <p style={{ fontSize:'clamp(0.88rem,1.9vw,0.97rem)', color:'#78350F',
+                  fontWeight:600, marginBottom:'0.35rem' }}>
+                  The slider has real meaning.
+                </p>
+                <p style={{ fontSize:'clamp(0.83rem,1.7vw,0.92rem)', color:'#92400E' }}>
+                  "Moderate" ≈ <strong>3× more important</strong>. "Strong" ≈ <strong>5×</strong>. "Extreme" ≈ <strong>9×</strong>.
+                  Use Equal freely — only move further when you genuinely feel that gap exists.
+                  15 comparisons, about 3 minutes.
+                </p>
+              </div>
             </>
           )}
         </div>
