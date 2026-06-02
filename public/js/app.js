@@ -157,8 +157,11 @@ function SurveyApp() {
           stepNum={3} totalSteps={4} />;
       case 5:
         return <CardSelectStep
-          label="How familiar are you with sustainable or green building practices?"
-          options={FAMILIARITY_LEVELS} value={formData.familiarity}
+          label={isCitizenRole
+            ? "How much does sustainability factor into your home decisions?"
+            : "How familiar are you with sustainable or green building practices?"}
+          options={isCitizenRole ? FAMILIARITY_LEVELS_CITIZEN : FAMILIARITY_LEVELS}
+          value={formData.familiarity}
           onChange={updateField('familiarity')} onNext={goNext}
           stepNum={isCitizenRole ? 3 : 4} totalSteps={isCitizenRole ? 3 : 4} />;
       case 6:

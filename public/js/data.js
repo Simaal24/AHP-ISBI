@@ -65,6 +65,10 @@ var FAMILIARITY_LEVELS = [
   "Not at all", "Slightly", "Moderately", "Very", "Expert-level"
 ];
 
+var FAMILIARITY_LEVELS_CITIZEN = [
+  "Not at all", "A little", "Somewhat", "Quite a bit", "A lot"
+];
+
 var CATEGORIES = [
   { id: "energy", name: "Energy & Climate", color: "#D97706",
     desc: "Think energy-efficient design, solar adoption, low carbon emissions" },
