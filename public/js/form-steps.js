@@ -192,14 +192,12 @@ function ExplanationScreen({ relationship, onNext }) {
 }
 
 function MidwayScreen({ comparisons, onNext }) {
-  const results = computeAHP(comparisons);
-  const { weights, ranked } = results;
+  const { ranked } = computeAHP(comparisons);
+  const topCat = CATEGORIES[ranked[0].index];
+  const secondCat = CATEGORIES[ranked[1].index];
 
   const [animate, setAnimate] = React.useState(false);
-  React.useEffect(() => { setTimeout(() => setAnimate(true), 150); }, []);
-
-  const remaining = PAIRS.length - Object.keys(comparisons).length;
-  const maxWeight = Math.max(...weights);
+  React.useEffect(() => { setTimeout(() => setAnimate(true), 100); }, []);
 
   return (
     <div className="midway-screen">
@@ -207,14 +205,15 @@ function MidwayScreen({ comparisons, onNext }) {
 
         {/* Left — heading + cta */}
         <div className="midway-left">
-          <span className="step-counter" style={{ marginBottom:'0.75rem' }}>Halfway there</span>
+          <span className="step-counter" style={{ marginBottom:'0.75rem' }}>Quick breather</span>
           <h2 style={{ fontSize:'clamp(1.4rem,3vw,2rem)', fontWeight:700,
             color:'var(--green-900)', lineHeight:1.25, marginBottom:'0.75rem' }}>
-            A snapshot of your priorities
+            Something's already emerging…
           </h2>
           <p style={{ fontSize:'0.9rem', color:'var(--gray-500)', lineHeight:1.65,
             marginBottom:'2rem' }}>
-            These weights will shift and sharpen with the remaining {remaining} comparisons.
+            7 comparisons in. The next 8 will confirm — or completely
+            flip — what's taking shape.
           </p>
           <button className="btn-primary" onClick={onNext}
             style={{ fontSize:'1rem', padding:'0.9rem 2rem' }}>
@@ -222,31 +221,22 @@ function MidwayScreen({ comparisons, onNext }) {
           </button>
         </div>
 
-        {/* Right — bar chart */}
-        <div className="midway-right">
-          {ranked.map(({ index, weight }, i) => {
-            const cat = CATEGORIES[index];
-            const pct = maxWeight > 0 ? (weight / maxWeight) * 100 : 100 / CATEGORIES.length;
-            const delay = `${0.05 + i * 0.08}s`;
-            return (
-              <div key={cat.id} className="midway-bar-row"
-                style={{ animation: animate ? `fadeSlideIn 0.4s ease-out ${delay} both` : 'none' }}>
-                <div className="midway-bar-meta">
-                  <div className="midway-bar-dot" style={{ background: cat.color }} />
-                  <span className="midway-bar-name">{cat.name}</span>
-                  <span className="midway-bar-pct">{Math.round(weight * 100)}%</span>
-                </div>
-                <div className="midway-bar-track">
-                  <div className="midway-bar-fill" style={{
-                    background: cat.color,
-                    opacity: 0.7,
-                    width: animate ? `${pct}%` : '0%',
-                    transitionDelay: delay,
-                  }} />
-                </div>
-              </div>
-            );
-          })}
+        {/* Right — curiosity hook */}
+        <div className="midway-right" style={{ display:'flex', alignItems:'center' }}>
+          <div className={`midway-hint-card ${animate ? 'midway-hint-visible' : ''}`}
+            style={{ borderLeft:`4px solid ${topCat.color}` }}>
+            <p className="midway-hint-label">Currently leading</p>
+            <div style={{ display:'flex', alignItems:'center', gap:9, margin:'0.5rem 0 0.6rem' }}>
+              <div style={{ width:12, height:12, borderRadius:'50%',
+                background:topCat.color, flexShrink:0 }} />
+              <span style={{ fontSize:'clamp(1.1rem,2.5vw,1.3rem)', fontWeight:700,
+                color:'var(--gray-900)' }}>{topCat.name}</span>
+            </div>
+            <p style={{ fontSize:'0.85rem', color:'var(--gray-500)', lineHeight:1.55 }}>
+              <strong style={{ color:'var(--gray-700)' }}>{secondCat.name}</strong> is
+              close behind — the remaining comparisons will decide.
+            </p>
+          </div>
         </div>
 
       </div>
