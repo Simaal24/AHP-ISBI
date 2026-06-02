@@ -192,9 +192,9 @@ function ExplanationScreen({ relationship, onNext }) {
 }
 
 function MidwayScreen({ comparisons, onNext }) {
-  const { ranked } = computeAHP(comparisons);
-  const topCat = CATEGORIES[ranked[0].index];
-  const secondCat = CATEGORIES[ranked[1].index];
+  const done = Object.keys(comparisons).length;
+  const total = PAIRS.length;
+  const remaining = total - done;
 
   const [animate, setAnimate] = React.useState(false);
   React.useEffect(() => { setTimeout(() => setAnimate(true), 100); }, []);
@@ -205,15 +205,14 @@ function MidwayScreen({ comparisons, onNext }) {
 
         {/* Left — heading + cta */}
         <div className="midway-left">
-          <span className="step-counter" style={{ marginBottom:'0.75rem' }}>Quick breather</span>
           <h2 style={{ fontSize:'clamp(1.4rem,3vw,2rem)', fontWeight:700,
             color:'var(--green-900)', lineHeight:1.25, marginBottom:'0.75rem' }}>
-            Something's already emerging…
+            Halfway through
           </h2>
           <p style={{ fontSize:'0.9rem', color:'var(--gray-500)', lineHeight:1.65,
             marginBottom:'2rem' }}>
-            7 comparisons in. The next 8 will confirm — or completely
-            flip — what's taking shape.
+            {done} of {total} comparisons done.
+            The final {remaining} will complete the picture.
           </p>
           <button className="btn-primary" onClick={onNext}
             style={{ fontSize:'1rem', padding:'0.9rem 2rem' }}>
@@ -221,21 +220,23 @@ function MidwayScreen({ comparisons, onNext }) {
           </button>
         </div>
 
-        {/* Right — curiosity hook */}
+        {/* Right — progress dot map */}
         <div className="midway-right" style={{ display:'flex', alignItems:'center' }}>
-          <div className={`midway-hint-card ${animate ? 'midway-hint-visible' : ''}`}
-            style={{ borderLeft:`4px solid ${topCat.color}` }}>
-            <p className="midway-hint-label">Currently leading</p>
-            <div style={{ display:'flex', alignItems:'center', gap:9, margin:'0.5rem 0 0.6rem' }}>
-              <div style={{ width:12, height:12, borderRadius:'50%',
-                background:topCat.color, flexShrink:0 }} />
-              <span style={{ fontSize:'clamp(1.1rem,2.5vw,1.3rem)', fontWeight:700,
-                color:'var(--gray-900)' }}>{topCat.name}</span>
+          <div>
+            <div className="midway-dots">
+              {Array.from({ length: total }, (_, i) => (
+                <div key={i}
+                  className={`midway-dot ${i < done ? 'midway-dot-done' : ''}`}
+                  style={animate && i < done
+                    ? { animation: `dotPop 0.35s ease-out ${i * 0.04}s both` }
+                    : {}}
+                />
+              ))}
             </div>
-            <p style={{ fontSize:'0.85rem', color:'var(--gray-500)', lineHeight:1.55 }}>
-              <strong style={{ color:'var(--gray-700)' }}>{secondCat.name}</strong> is
-              close behind — the remaining comparisons will decide.
-            </p>
+            <div className="midway-dot-legend">
+              <span>{done} done</span>
+              <span>{remaining} to go</span>
+            </div>
           </div>
         </div>
 

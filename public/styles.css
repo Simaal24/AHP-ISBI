@@ -282,19 +282,30 @@ body {
   display:flex; flex-direction:column; align-items:flex-start;
 }
 .midway-right { width:100%; }
-.midway-hint-card {
-  background:var(--surface); border-radius:14px;
-  border:1px solid var(--gray-200);
-  padding:1.5rem 1.75rem; width:100%;
-  opacity:0; transform:translateY(12px);
-  transition: opacity 0.45s ease-out, transform 0.45s ease-out;
+.midway-dots {
+  display:flex; flex-wrap:wrap; gap:10px;
+  max-width:240px;
 }
-.midway-hint-visible {
-  opacity:1; transform:translateY(0);
+.midway-dot {
+  width:18px; height:18px; border-radius:50%;
+  border:2px solid var(--gray-300);
+  background:transparent;
+  transition: background 0.2s, border-color 0.2s;
 }
-.midway-hint-label {
-  font-size:0.72rem; font-weight:700; color:var(--gray-400);
-  text-transform:uppercase; letter-spacing:0.06em;
+.midway-dot-done {
+  background:var(--green-500);
+  border-color:var(--green-500);
+}
+@keyframes dotPop {
+  0%   { transform:scale(0); opacity:0; }
+  65%  { transform:scale(1.25); }
+  100% { transform:scale(1); opacity:1; }
+}
+.midway-dot-legend {
+  display:flex; justify-content:space-between;
+  margin-top:12px; font-size:0.8rem;
+  font-weight:600; color:var(--gray-400);
+  max-width:240px;
 }
 
 @media (max-width:640px) {
