@@ -15,7 +15,7 @@ function CatCard({ cat, side, small }) {
         </div>
       </div>
       {small && (
-        <div className="cat-tooltip" style={isRight ? { right:0 } : { left:0 }}>
+        <div className="cat-tooltip" style={isRight ? { right:0, left:'auto' } : {}}>
           {cat.desc}
         </div>
       )}

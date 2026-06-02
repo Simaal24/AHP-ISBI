@@ -170,48 +170,31 @@ function ExplanationScreen({ relationship, onNext }) {
           How the next section works
         </h2>
         <div style={{ fontSize:'clamp(0.95rem,2vw,1.05rem)', color:'var(--gray-700)', lineHeight:1.7 }}>
-          {isCitizen ? (
-            <>
-              <p style={{ marginBottom:'0.85rem' }}>
-                You'll compare pairs of sustainability categories — like
-                <strong> Energy & Climate</strong> vs <strong>Water Management</strong>.
-                For each, think about a home you'd live in year-round and pick whichever matters
-                more to your comfort, health, and well-being.
-              </p>
-              <div style={{ padding:'0.85rem 1rem', background:'#FEF3C7',
-                border:'1px solid #FDE68A', borderRadius:10, lineHeight:1.6 }}>
-                <p style={{ fontSize:'clamp(0.88rem,1.9vw,0.97rem)', color:'#78350F',
-                  fontWeight:600, marginBottom:'0.35rem' }}>
-                  The slider has real meaning.
-                </p>
-                <p style={{ fontSize:'clamp(0.83rem,1.7vw,0.92rem)', color:'#92400E' }}>
-                  "Moderate" ≈ <strong>3× more important</strong>. "Strong" ≈ <strong>5×</strong>. "Extreme" ≈ <strong>9×</strong>.
-                  Use Equal freely — only move further when you genuinely feel that gap exists.
-                </p>
-              </div>
-            </>
-          ) : (
-            <>
-              <p style={{ marginBottom:'0.85rem' }}>
-                You'll compare pairs of sustainability categories — like
-                <strong> Energy & Climate</strong> vs <strong>Water Management</strong>.
-                Drawing on your professional experience across projects and climates in India,
-                pick which matters more when judging how sustainable a residential project truly is.
-              </p>
-              <div style={{ padding:'0.85rem 1rem', background:'#FEF3C7',
-                border:'1px solid #FDE68A', borderRadius:10, lineHeight:1.6 }}>
-                <p style={{ fontSize:'clamp(0.88rem,1.9vw,0.97rem)', color:'#78350F',
-                  fontWeight:600, marginBottom:'0.35rem' }}>
-                  The slider has real meaning.
-                </p>
-                <p style={{ fontSize:'clamp(0.83rem,1.7vw,0.92rem)', color:'#92400E' }}>
-                  "Moderate" ≈ <strong>3× more important</strong>. "Strong" ≈ <strong>5×</strong>. "Extreme" ≈ <strong>9×</strong>.
-                  Use Equal freely — only move further when you genuinely feel that gap exists.
-                  15 comparisons, about 3 minutes.
-                </p>
-              </div>
-            </>
-          )}
+          <p style={{ marginBottom:'0.85rem' }}>
+            You'll compare pairs of sustainability categories — like
+            <strong> Energy & Climate</strong> vs <strong>Water Management</strong>.
+            {isCitizen
+              ? ' For each, think about a home you\'d live in year-round and pick whichever matters more to your comfort, health, and well-being.'
+              : ' Drawing on your professional experience across projects and climates in India, pick which matters more when judging how sustainable a residential project truly is.'}
+          </p>
+          <div style={{ padding:'0.85rem 1rem', background:'#FEF3C7',
+            border:'1px solid #FDE68A', borderRadius:10, lineHeight:1.7 }}>
+            <p style={{ fontSize:'clamp(0.88rem,1.9vw,0.97rem)', color:'#78350F',
+              fontWeight:700, marginBottom:'0.4rem' }}>
+              ⚠ Every notch on the slider is a real multiplier.
+            </p>
+            <p style={{ fontSize:'clamp(0.83rem,1.7vw,0.92rem)', color:'#92400E',
+              marginBottom:'0.4rem' }}>
+              Sliding to <strong>3×</strong> means one category is three times
+              more important. <strong>5×</strong> is five times. The
+              edge — <strong>9×</strong> — means nine times more important.
+            </p>
+            <p style={{ fontSize:'clamp(0.83rem,1.7vw,0.92rem)', color:'#92400E' }}>
+              Equal is perfectly valid — only move away from center when
+              you genuinely believe that gap exists.
+              {!isCitizen && ' 15 comparisons, about 3 minutes.'}
+            </p>
+          </div>
         </div>
         <button className="btn-primary" onClick={onNext}
           style={{ marginTop:'2rem', fontSize:'1.05rem', padding:'0.9rem 2.5rem' }}>
