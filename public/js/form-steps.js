@@ -13,7 +13,7 @@ function WelcomeScreen({ onBegin }) {
         in Indian residential real estate. This takes about 5–8 minutes.
       </p>
       <button className="btn-primary" onClick={onBegin} style={{ fontSize:'1.1rem', padding:'1rem 3rem' }}>
-        Begin
+        Let's Begin
       </button>
       <p style={{ fontSize:'0.8rem', color:'var(--gray-400)', marginTop:'1.5rem', maxWidth:400 }}>
         Your responses are confidential and used solely for academic research.
@@ -22,12 +22,9 @@ function WelcomeScreen({ onBegin }) {
   );
 }
 
-function FieldLayout({ label, sublabel, hint, stepNum, totalSteps, children }) {
+function FieldLayout({ label, sublabel, hint, children }) {
   return (
     <div className="field-layout">
-      <div style={{ marginBottom:'0.5rem' }}>
-        <span className="step-counter">{stepNum} of {totalSteps}</span>
-      </div>
       <h2 className="field-label">{label}</h2>
       {sublabel && <p className="field-sublabel">{sublabel}</p>}
       <div style={{ marginTop:'1.5rem', width:'100%', maxWidth:520 }}>
@@ -144,6 +141,100 @@ function CardSelectStep({ label, sublabel, options, value, onChange, onNext,
   );
 }
 
+function DemoSlider() {
+  const catA = { name: 'Public Transport', color: '#16a34a' };
+  const catB = { name: 'Private Vehicle',  color: '#7c3aed' };
+  const trackRef = React.useRef(null);
+  const [dragging, setDragging] = React.useState(false);
+  const [val, setVal]           = React.useState(0);
+  const valRef = React.useRef(0);
+  React.useEffect(() => { valRef.current = val; }, [val]);
+
+  const snap   = [-4,-3,-2,-1,0,1,2,3,4];
+  const saaty  = [9,7,5,3,1,3,5,7,9];
+  const ticks  = [32,26,20,14,8,14,20,26,32];
+  const pct    = (p) => ((p + 4) / 8) * 100;
+
+  const hit = (clientX) => {
+    if (!trackRef.current) return;
+    const r = trackRef.current.getBoundingClientRect();
+    const raw = (Math.max(0, Math.min(100, ((clientX - r.left) / r.width) * 100)) / 100) * 8 - 4;
+    setVal(snap.reduce((a, b) => Math.abs(raw - a) < Math.abs(raw - b) ? a : b));
+  };
+
+  const startDrag = (e) => { e.preventDefault(); setDragging(true); hit(e.touches ? e.touches[0].clientX : e.clientX); };
+  const startRef  = React.useRef(startDrag);
+  React.useEffect(() => { startRef.current = startDrag; });
+  React.useEffect(() => {
+    const el = trackRef.current; if (!el) return;
+    const h  = (e) => startRef.current(e);
+    el.addEventListener('touchstart', h, { passive: false });
+    return () => el.removeEventListener('touchstart', h);
+  }, []);
+  React.useEffect(() => {
+    if (!dragging) return;
+    const mv = (e) => hit(e.touches ? e.touches[0].clientX : e.clientX);
+    const up = () => setDragging(false);
+    window.addEventListener('mousemove', mv); window.addEventListener('mouseup', up);
+    window.addEventListener('touchmove', mv, { passive: true }); window.addEventListener('touchend', up);
+    return () => {
+      window.removeEventListener('mousemove', mv); window.removeEventListener('mouseup', up);
+      window.removeEventListener('touchmove', mv); window.removeEventListener('touchend', up);
+    };
+  }, [dragging]);
+
+  const idx   = snap.indexOf(val);
+  const tPct  = pct(val);
+  const left  = val < 0;
+  const color = val === 0 ? 'var(--green-500)' : (left ? catA.color : catB.color);
+
+  return (
+    <div style={{ width:'100%' }}>
+      <div className="slider-cats">
+        <div style={{ display:'flex', alignItems:'center', gap:6, flex:'1 1 0' }}>
+          <div style={{ width:9, height:9, borderRadius:'50%', background:catA.color, flexShrink:0 }} />
+          <span style={{ fontWeight:600, fontSize:'0.85rem', color:'var(--gray-900)' }}>{catA.name}</span>
+        </div>
+        <div style={{ display:'flex', alignItems:'center', gap:6, flex:'1 1 0', flexDirection:'row-reverse', textAlign:'right' }}>
+          <div style={{ width:9, height:9, borderRadius:'50%', background:catB.color, flexShrink:0 }} />
+          <span style={{ fontWeight:600, fontSize:'0.85rem', color:'var(--gray-900)' }}>{catB.name}</span>
+        </div>
+      </div>
+      <div className="slider-track-wrap" ref={trackRef} onMouseDown={startDrag}>
+        <div className="slider-track">
+          <div className="slider-fill" style={{
+            left: val <= 0 ? `${tPct}%` : '50%',
+            width: `${Math.abs(tPct - 50)}%`,
+            background: color, opacity: 0.25,
+          }} />
+          {snap.map((p, i) => (
+            <div key={p} className="slider-tick" style={{ left:`${pct(p)}%` }}>
+              <div className="slider-tick-mark" style={{
+                height:`${ticks[i]}px`, width: p===0 ? '3px':'2px',
+                background: p===0 ? 'var(--gray-400)':'var(--gray-300)',
+              }} />
+              <span className="slider-tick-label">{saaty[i]}</span>
+            </div>
+          ))}
+          <div className={`slider-thumb nudge${dragging ? ' active':''}`}
+            style={{ left:`${tPct}%`, background:color }}>
+            <span style={{ fontSize:'0.7rem', fontWeight:700, color:'#fff' }}>{saaty[idx]}</span>
+          </div>
+        </div>
+      </div>
+      <div className="slider-direction">
+        <span style={{ color:catA.color, fontSize:'0.75rem', fontWeight:500 }}>← {catA.name.split(' ')[0]}</span>
+        <span style={{ color:catB.color, fontSize:'0.75rem', fontWeight:500 }}>{catB.name.split(' ')[0]} →</span>
+      </div>
+      <div className="slider-result" style={{ color: val===0 ? 'var(--gray-500)' : color }}>
+        {val === 0
+          ? 'Both are equally important'
+          : <span><strong>{left ? catA.name : catB.name}</strong>{' is '}<strong style={{ fontSize:'1.05em' }}>~{saaty[idx]}×</strong>{' more important'}</span>}
+      </div>
+    </div>
+  );
+}
+
 function ExplanationScreen({ relationship, onNext }) {
   const isCitizen = RELATIONSHIP_OPTIONS.find(r => r.label === relationship)?.citizen ?? true;
 
@@ -151,40 +242,57 @@ function ExplanationScreen({ relationship, onNext }) {
     <div className="field-layout" style={{ textAlign:'left' }}>
       <div style={{ background:'var(--green-50)', borderRadius:16, padding:'clamp(1.5rem,4vw,2.5rem)',
         maxWidth:600, width:'100%', border:'1px solid var(--green-100)' }}>
+
         <h2 style={{ fontSize:'clamp(1.3rem,3vw,1.75rem)', fontWeight:700, color:'var(--green-900)',
-          marginBottom:'1rem', lineHeight:1.3 }}>
+          marginBottom:'1.25rem', lineHeight:1.3 }}>
           How the next section works
         </h2>
-        <div style={{ fontSize:'clamp(0.95rem,2vw,1.05rem)', color:'var(--gray-700)', lineHeight:1.7 }}>
-          <p style={{ marginBottom:'0.85rem' }}>
-            You'll compare pairs of sustainability categories — like
-            <strong> Energy & Climate</strong> vs <strong>Water Management</strong>.
-            {isCitizen
-              ? ' For each, think about a home you\'d live in year-round and pick whichever matters more to your comfort, health, and well-being.'
-              : ' Drawing on your professional experience across projects and climates in India, pick which matters more when judging how sustainable a residential project truly is.'}
-          </p>
-          <div style={{ padding:'0.85rem 1rem', background:'#FEF3C7',
-            border:'1px solid #FDE68A', borderRadius:10, lineHeight:1.7 }}>
-            <p style={{ fontSize:'clamp(0.88rem,1.9vw,0.97rem)', color:'#78350F',
-              fontWeight:700, marginBottom:'0.4rem' }}>
-              ⚠ Every notch on the slider is a real multiplier.
-            </p>
-            <p style={{ fontSize:'clamp(0.83rem,1.7vw,0.92rem)', color:'#92400E',
-              marginBottom:'0.4rem' }}>
-              Sliding to <strong>3×</strong> means one category is three times
-              more important. <strong>5×</strong> is five times. The
-              edge — <strong>9×</strong> — means nine times more important.
-            </p>
-            <p style={{ fontSize:'clamp(0.83rem,1.7vw,0.92rem)', color:'#92400E' }}>
-              Equal is perfectly valid — only move away from center when
-              you genuinely believe that gap exists.
-              {!isCitizen && ' 15 comparisons, about 3 minutes.'}
-            </p>
-          </div>
+
+        <div style={{ fontSize:'clamp(0.95rem,2vw,1.05rem)', color:'var(--gray-700)', lineHeight:1.7,
+          marginBottom:'1.25rem' }}>
+          {isCitizen ? (
+            <>
+              <p style={{ marginBottom:'0.6rem' }}>
+                <strong>Tell us what you care about.</strong>
+              </p>
+              <p style={{ marginBottom:0 }}>
+                This will help us understand and study priorities while building greener cities and homes.
+              </p>
+            </>
+          ) : (
+            <>
+              <p style={{ marginBottom:'0.6rem' }}>
+                You'll compare pairs of sustainability categories — like{' '}
+                <strong>Energy &amp; Climate</strong> vs <strong>Water Management</strong>.
+              </p>
+              <p style={{ marginBottom:0 }}>
+                Drawing on your professional experience across projects and climates in India,
+                pick which matters more when judging how sustainable a residential project truly is.
+              </p>
+            </>
+          )}
         </div>
+
+        <p style={{ fontSize:'clamp(0.88rem,1.9vw,0.97rem)', color:'var(--gray-600)',
+          marginBottom:'1rem', fontStyle:'italic' }}>
+          Here's an example — try it:{' '}
+          {isCitizen
+            ? 'Would you rather choose public transport or private vehicles for your daily travel?'
+            : 'Which matters more for sustainable residential projects?'}
+        </p>
+
+        <div style={{ background:'#fff', border:'1px solid var(--green-100)', borderRadius:12,
+          padding:'1.25rem 1rem 1rem' }}>
+          <DemoSlider />
+          <p style={{ fontSize:'0.78rem', color:'var(--gray-400)', textAlign:'center',
+            marginTop:'0.75rem', marginBottom:0 }}>
+            Move the slider towards your preference — the further you drag, the stronger the preference.
+          </p>
+        </div>
+
         <button className="btn-primary" onClick={onNext}
           style={{ marginTop:'2rem', fontSize:'1.05rem', padding:'0.9rem 2.5rem' }}>
-          Start comparisons
+          Start
         </button>
       </div>
     </div>
