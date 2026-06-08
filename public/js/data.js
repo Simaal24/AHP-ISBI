@@ -70,16 +70,22 @@ var FAMILIARITY_LEVELS_CITIZEN = [
 
 var CATEGORIES = [
   { id: "energy", name: "Energy & Climate", color: "#D97706",
+    shortDesc: "Energy-efficient design, solar & low carbon",
     desc: "Think energy-efficient design, solar adoption, low carbon emissions" },
   { id: "water", name: "Water Management", color: "#2563EB",
+    shortDesc: "Rainwater harvesting, water recycling & efficiency",
     desc: "Think rainwater harvesting, water recycling, efficient fixtures" },
   { id: "materials", name: "Materials & Construction", color: "#92400E",
+    shortDesc: "Eco-friendly materials & low-carbon construction",
     desc: "Think eco-friendly materials, low VOC, low embodied carbon" },
   { id: "site", name: "Site & Ecology", color: "#059669",
+    shortDesc: "Green spaces, biodiversity & stormwater",
     desc: "Think green spaces, biodiversity, stormwater management" },
   { id: "indoor", name: "Indoor Environment", color: "#7C3AED",
+    shortDesc: "Air quality, natural light & thermal comfort",
     desc: "Think air quality (AQI), natural daylight, thermal comfort" },
   { id: "operations", name: "Operations & Governance", color: "#475569",
+    shortDesc: "Waste management, maintenance & monitoring",
     desc: "Think waste management, maintenance planning, performance monitoring" },
 ];
 

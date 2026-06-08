@@ -182,6 +182,7 @@ function SurveyApp() {
               pairIndex={displayIdx} totalPairs={PAIRS.length}
               value={displayVal}
               onChange={makeComparisonHandler(pairIdx, swapped)}
+              isCitizen={isCitizenRole}
             />
           );
         }

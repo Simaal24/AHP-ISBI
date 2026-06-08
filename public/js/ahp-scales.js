@@ -9,21 +9,15 @@ function CatCard({ cat, side, small }) {
         background: cat.color, flexShrink:0, opacity:0.85 }} />
       <div style={{ minWidth:0 }}>
         <div style={{ fontWeight:600, fontSize: small ? '0.85rem' : 'clamp(0.95rem,2vw,1.1rem)',
-          color:'var(--gray-900)', lineHeight:1.3, display:'inline' }}>
-          {cat.name}
-          {small && <span className="cat-info-icon">ⓘ</span>}
+          color:'var(--gray-900)', lineHeight:1.3 }}>
+          {cat.shortDesc || cat.name}
         </div>
       </div>
-      {small && (
-        <div className="cat-tooltip" style={isRight ? { right:0, left:'auto' } : {}}>
-          {cat.desc}
-        </div>
-      )}
     </div>
   );
 }
 
-function ComparisonHeader({ catA, catB, pairIndex, totalPairs }) {
+function ComparisonHeader({ catA, catB, pairIndex, totalPairs, isCitizen }) {
   return (
     <div style={{ marginBottom:'1.5rem', width:'100%' }}>
       <span className="step-counter" style={{ marginBottom:8, display:'block' }}>
@@ -31,13 +25,15 @@ function ComparisonHeader({ catA, catB, pairIndex, totalPairs }) {
       </span>
       <h2 style={{ fontSize:'clamp(1.1rem,2.8vw,1.4rem)', fontWeight:600, color:'var(--gray-800)',
         lineHeight:1.4, marginBottom:0 }}>
-        Which is more important when evaluating sustainability in Indian residential real estate?
+        {isCitizen
+          ? 'Which matters more for a greener home in India?'
+          : 'Which matters more for sustainable residential projects?'}
       </h2>
     </div>
   );
 }
 
-function GradientSlider({ catA, catB, pairIndex, totalPairs, value, onChange }) {
+function GradientSlider({ catA, catB, pairIndex, totalPairs, value, onChange, isCitizen }) {
   const trackRef = React.useRef(null);
   const sliderBodyRef = React.useRef(null);
   const prevPairIndexRef = React.useRef(null);
@@ -133,7 +129,7 @@ React.useEffect(() => { localValRef.current = localVal; }, [localVal]);
 
   return (
     <div className="field-layout">
-      <ComparisonHeader catA={catA} catB={catB} pairIndex={pairIndex} totalPairs={totalPairs} />
+      <ComparisonHeader catA={catA} catB={catB} pairIndex={pairIndex} totalPairs={totalPairs} isCitizen={isCitizen} />
       <div className="slider-container" ref={sliderBodyRef}>
         <div className="slider-cats">
           <CatCard cat={catA} side="left" small />
@@ -194,7 +190,7 @@ React.useEffect(() => { localValRef.current = localVal; }, [localVal]);
   );
 }
 
-function AHPComparison({ catA, catB, pairIndex, totalPairs, value, onChange }) {
+function AHPComparison({ catA, catB, pairIndex, totalPairs, value, onChange, isCitizen }) {
   return <GradientSlider catA={catA} catB={catB} pairIndex={pairIndex}
-    totalPairs={totalPairs} value={value} onChange={onChange} />;
+    totalPairs={totalPairs} value={value} onChange={onChange} isCitizen={isCitizen} />;
 }
