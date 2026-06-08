@@ -47,10 +47,7 @@ function GradientSlider({ catA, catB, pairIndex, totalPairs, value, onChange }) 
   const [touched, setTouched] = React.useState(false);
   const localValRef = React.useRef(localVal);
 
-  // First comparison + first visit = learning mode (explore freely, manual confirm)
-  const isLearning = pairIndex === 0 && value == null;
-
-  React.useEffect(() => { localValRef.current = localVal; }, [localVal]);
+React.useEffect(() => { localValRef.current = localVal; }, [localVal]);
 
   React.useEffect(() => {
     const el = sliderBodyRef.current;
@@ -107,8 +104,6 @@ function GradientSlider({ catA, catB, pairIndex, totalPairs, value, onChange }) 
 
   const finishDrag = () => {
     setDragging(false);
-    // In learning mode: don't auto-confirm, let them explore
-    if (isLearning && !confirmed) return;
     confirmValue(localValRef.current);
   };
 
@@ -163,7 +158,7 @@ function GradientSlider({ catA, catB, pairIndex, totalPairs, value, onChange }) 
                 <span className="slider-tick-label">{saaty[i]}</span>
               </div>
             ))}
-            <div className={`slider-thumb ${dragging ? 'active' : ''}${isLearning && !confirmed ? ' nudge' : ''}`}
+            <div className={`slider-thumb ${dragging ? 'active' : ''}`}
               style={{ left: `${thumbPct}%`, background: gradientColor }}>
               <span style={{ fontSize:'0.7rem', fontWeight:700, color:'#fff' }}>
                 {saaty[currentIdx]}
@@ -194,13 +189,6 @@ function GradientSlider({ catA, catB, pairIndex, totalPairs, value, onChange }) 
                 {' more important'}
               </span>}
         </div>
-        {isLearning && touched && !confirmed && (
-          <button className="btn-primary" onClick={() => confirmValue(localVal)}
-            style={{ marginTop:'1rem', alignSelf:'center', fontSize:'0.95rem',
-              padding:'0.75rem 2rem' }}>
-            Confirm
-          </button>
-        )}
       </div>
     </div>
   );
