@@ -162,10 +162,10 @@ React.useEffect(() => { localValRef.current = localVal; }, [localVal]);
         </div>
         <div className="slider-direction">
           <span style={{ color:catA.color, fontSize:'0.75rem', fontWeight:500 }}>← {catA.name.split(' & ')[0]}</span>
-          <span style={{ color:'var(--gray-400)', fontSize:'0.7rem', fontWeight:400,
+          {pairIndex === 0 && <span style={{ color:'var(--gray-400)', fontSize:'0.7rem', fontWeight:400,
             opacity: touched ? 0 : 1, transition:'opacity 0.3s ease' }}>
             tap center = equal
-          </span>
+          </span>}
           <span style={{ color:catB.color, fontSize:'0.75rem', fontWeight:500 }}>{catB.name.split(' & ')[0]} →</span>
         </div>
         <div className="slider-result" style={{ color: localVal === 0 ? 'var(--gray-500)' : gradientColor }}>
