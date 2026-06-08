@@ -273,21 +273,21 @@ function ExplanationScreen({ relationship, onNext }) {
           )}
         </div>
 
-        <p style={{ fontSize:'clamp(0.88rem,1.9vw,0.97rem)', color:'var(--gray-600)',
-          marginBottom:'1rem', fontStyle:'italic' }}>
-          Here's an example — try it:{' '}
-          {isCitizen
-            ? 'Would you rather choose public transport or private vehicles for your daily travel?'
-            : 'Which matters more for sustainable residential projects?'}
-        </p>
-
         <div style={{ background:'#fff', border:'1px solid var(--green-100)', borderRadius:12,
-          padding:'1.25rem 1rem 1rem' }}>
-          <DemoSlider />
-          <p style={{ fontSize:'0.78rem', color:'var(--gray-400)', textAlign:'center',
-            marginTop:'0.75rem', marginBottom:0 }}>
-            Move the slider towards your preference — the further you drag, the stronger the preference.
+          padding:'1.25rem 1rem 1rem', marginBottom:'1rem' }}>
+          <p style={{ fontSize:'0.8rem', fontWeight:600, color:'var(--gray-500)',
+            textTransform:'uppercase', letterSpacing:'0.04em', marginBottom:'0.75rem' }}>
+            Try it
           </p>
+          <DemoSlider />
+          <div style={{ marginTop:'1rem', display:'flex', flexDirection:'column', gap:'0.35rem' }}>
+            <p style={{ fontSize:'0.82rem', color:'var(--gray-500)', marginBottom:0 }}>
+              <strong style={{ color:'var(--gray-700)' }}>Staying in the middle is perfectly fine</strong> — equal means both matter the same to you.
+            </p>
+            <p style={{ fontSize:'0.82rem', color:'var(--gray-500)', marginBottom:0 }}>
+              Drag further from centre only when you genuinely feel one outweighs the other. The further you go, the stronger that opinion.
+            </p>
+          </div>
         </div>
 
         <button className="btn-primary" onClick={onNext}
