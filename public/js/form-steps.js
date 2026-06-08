@@ -224,6 +224,9 @@ function DemoSlider() {
       </div>
       <div className="slider-direction">
         <span style={{ color:catA.color, fontSize:'0.75rem', fontWeight:500 }}>← {catA.name.split(' ')[0]}</span>
+        <span style={{ color:'var(--gray-400)', fontSize:'0.7rem', fontWeight:400 }}>
+          tap center = equal
+        </span>
         <span style={{ color:catB.color, fontSize:'0.75rem', fontWeight:500 }}>{catB.name.split(' ')[0]} →</span>
       </div>
       <div className="slider-result" style={{ color: val===0 ? 'var(--gray-500)' : color }}>
