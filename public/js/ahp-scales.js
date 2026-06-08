@@ -17,7 +17,7 @@ function CatCard({ cat, side, small }) {
   );
 }
 
-function ComparisonHeader({ catA, catB, pairIndex, totalPairs, isCitizen }) {
+function ComparisonHeader({ catA, catB, pairIndex, totalPairs }) {
   return (
     <div style={{ marginBottom:'1.5rem', width:'100%' }}>
       <span className="step-counter" style={{ marginBottom:8, display:'block' }}>
@@ -25,9 +25,7 @@ function ComparisonHeader({ catA, catB, pairIndex, totalPairs, isCitizen }) {
       </span>
       <h2 style={{ fontSize:'clamp(1.1rem,2.8vw,1.4rem)', fontWeight:600, color:'var(--gray-800)',
         lineHeight:1.4, marginBottom:0 }}>
-        {isCitizen
-          ? 'Which matters more for a greener home in India?'
-          : 'Which matters more for sustainable residential projects?'}
+        Which matters more?
       </h2>
     </div>
   );
@@ -129,7 +127,7 @@ React.useEffect(() => { localValRef.current = localVal; }, [localVal]);
 
   return (
     <div className="field-layout">
-      <ComparisonHeader catA={catA} catB={catB} pairIndex={pairIndex} totalPairs={totalPairs} isCitizen={isCitizen} />
+      <ComparisonHeader catA={catA} catB={catB} pairIndex={pairIndex} totalPairs={totalPairs} />
       <div className="slider-container" ref={sliderBodyRef}>
         <div className="slider-cats">
           <CatCard cat={catA} side="left" small />
