@@ -142,8 +142,8 @@ function CardSelectStep({ label, sublabel, options, value, onChange, onNext,
 }
 
 function DemoSlider() {
-  const catA = { name: 'Public Transport', color: '#16a34a' };
-  const catB = { name: 'Private Vehicle',  color: '#7c3aed' };
+  const catA = { name: 'Public Transport', shortDesc: 'Buses, metro & shared rides', color: '#16a34a' };
+  const catB = { name: 'Private Vehicle',  shortDesc: 'Cars, bikes & personal transport', color: '#7c3aed' };
   const trackRef = React.useRef(null);
   const [dragging, setDragging] = React.useState(false);
   const [val, setVal]           = React.useState(0);
@@ -193,11 +193,11 @@ function DemoSlider() {
       <div className="slider-cats">
         <div style={{ display:'flex', alignItems:'center', gap:6, flex:'1 1 0' }}>
           <div style={{ width:9, height:9, borderRadius:'50%', background:catA.color, flexShrink:0 }} />
-          <span style={{ fontWeight:600, fontSize:'0.85rem', color:'var(--gray-900)' }}>{catA.name}</span>
+          <span style={{ fontWeight:600, fontSize:'0.85rem', color:'var(--gray-900)' }}>{catA.shortDesc}</span>
         </div>
         <div style={{ display:'flex', alignItems:'center', gap:6, flex:'1 1 0', flexDirection:'row-reverse', textAlign:'right' }}>
           <div style={{ width:9, height:9, borderRadius:'50%', background:catB.color, flexShrink:0 }} />
-          <span style={{ fontWeight:600, fontSize:'0.85rem', color:'var(--gray-900)' }}>{catB.name}</span>
+          <span style={{ fontWeight:600, fontSize:'0.85rem', color:'var(--gray-900)' }}>{catB.shortDesc}</span>
         </div>
       </div>
       <div className="slider-track-wrap" ref={trackRef} onMouseDown={startDrag}>
@@ -248,30 +248,16 @@ function ExplanationScreen({ relationship, onNext }) {
           How the next section works
         </h2>
 
-        <div style={{ fontSize:'clamp(0.95rem,2vw,1.05rem)', color:'var(--gray-700)', lineHeight:1.7,
+        <p style={{ fontSize:'clamp(0.95rem,2vw,1.05rem)', color:'var(--gray-700)', lineHeight:1.7,
           marginBottom:'1.25rem' }}>
-          {isCitizen ? (
-            <>
-              <p style={{ marginBottom:'0.6rem' }}>
-                <strong>Tell us what you care about.</strong>
-              </p>
-              <p style={{ marginBottom:0 }}>
-                This will help us understand and study priorities while building greener cities and homes.
-              </p>
-            </>
-          ) : (
-            <>
-              <p style={{ marginBottom:'0.6rem' }}>
-                You'll compare pairs of sustainability categories — like{' '}
-                <strong>Energy &amp; Climate</strong> vs <strong>Water Management</strong>.
-              </p>
-              <p style={{ marginBottom:0 }}>
-                Drawing on your professional experience across projects and climates in India,
-                pick which matters more when judging how sustainable a residential project truly is.
-              </p>
-            </>
-          )}
-        </div>
+          {isCitizen
+            ? <>
+                <strong>Tell us what you care about.</strong> This helps us study priorities for greener homes and cities.
+              </>
+            : <>
+                Compare sustainability categories side by side. From your professional experience, pick which matters more for a truly sustainable project.
+              </>}
+        </p>
 
         <div style={{ background:'#fff', border:'1px solid var(--green-100)', borderRadius:12,
           padding:'1.25rem 1rem 1rem', marginBottom:'1rem' }}>
@@ -280,14 +266,10 @@ function ExplanationScreen({ relationship, onNext }) {
             Try it
           </p>
           <DemoSlider />
-          <div style={{ marginTop:'1rem', display:'flex', flexDirection:'column', gap:'0.35rem' }}>
-            <p style={{ fontSize:'0.82rem', color:'var(--gray-500)', marginBottom:0 }}>
-              <strong style={{ color:'var(--gray-700)' }}>Staying in the middle is perfectly fine</strong> — equal means both matter the same to you.
-            </p>
-            <p style={{ fontSize:'0.82rem', color:'var(--gray-500)', marginBottom:0 }}>
-              Drag further from centre only when you genuinely feel one outweighs the other. The further you go, the stronger that opinion.
-            </p>
-          </div>
+          <p style={{ fontSize:'0.82rem', color:'var(--gray-500)', marginTop:'1rem', marginBottom:0, lineHeight:1.6 }}>
+            <strong style={{ color:'var(--gray-700)' }}>Middle is perfectly valid</strong> — it means both matter equally.
+            Drag further only when you <strong style={{ color:'var(--gray-700)' }}>genuinely feel</strong> one outweighs the other.
+          </p>
         </div>
 
         <button className="btn-primary" onClick={onNext}
