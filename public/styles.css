@@ -198,8 +198,8 @@ body {
   touch-action:none; user-select:none;
 }
 .slider-track {
-  position:relative; height:8px; background:var(--gray-100);
-  border-radius:4px;
+  position:relative; height:10px; background:var(--gray-100);
+  border-radius:5px;
 }
 .slider-fill { position:absolute; top:0; height:100%; border-radius:4px; transition:all 0.15s; }
 .slider-tick {
@@ -216,7 +216,7 @@ body {
 }
 .slider-thumb {
   position:absolute; top:50%; transform:translate(-50%,-50%);
-  width:36px; height:36px; border-radius:50%;
+  width:42px; height:42px; border-radius:50%;
   display:flex; align-items:center; justify-content:center;
   box-shadow:0 2px 8px rgba(0,0,0,0.15);
   transition: left 0.15s, transform 0.15s, box-shadow 0.15s;

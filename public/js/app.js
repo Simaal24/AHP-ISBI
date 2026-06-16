@@ -95,10 +95,12 @@ function SurveyApp() {
   const makeComparisonHandler = React.useCallback((pairIdx, swapped) => (visualVal) => {
     const canonicalVal = swapped ? -visualVal : visualVal;
     setComparisons(prev => ({ ...prev, [pairIdx]: canonicalVal }));
+    const cur = stepRef.current;
+    const displayIdx = cur < MIDWAY_STEP ? cur - AHP_START : cur - AHP_START - 1;
+    const delay = displayIdx < 2 ? 1100 : 420;
     setTimeout(() => {
-      const cur = stepRef.current;
       navigate(Math.min(cur + 1, TOTAL_STEPS - 1));
-    }, 420);
+    }, delay);
   }, [navigate]);
 
   React.useEffect(() => {

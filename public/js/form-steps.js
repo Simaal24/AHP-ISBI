@@ -149,10 +149,11 @@ function DemoSlider() {
   const [val, setVal]           = React.useState(0);
   const valRef = React.useRef(0);
   React.useEffect(() => { valRef.current = val; }, [val]);
+  const levelWords = ['Extremely', 'Very strongly', 'Strongly', 'Slightly', null, 'Slightly', 'Strongly', 'Very strongly', 'Extremely'];
 
   const snap   = [-4,-3,-2,-1,0,1,2,3,4];
   const saaty  = [9,7,5,3,1,3,5,7,9];
-  const ticks  = [32,26,20,14,8,14,20,26,32];
+  const ticks  = [40,32,24,16,10,16,24,32,40];
   const pct    = (p) => ((p + 4) / 8) * 100;
 
   const hit = (clientX) => {
@@ -191,13 +192,19 @@ function DemoSlider() {
   return (
     <div style={{ width:'100%' }}>
       <div className="slider-cats">
-        <div style={{ display:'flex', alignItems:'center', gap:6, flex:'1 1 0' }}>
-          <div style={{ width:9, height:9, borderRadius:'50%', background:catA.color, flexShrink:0 }} />
-          <span style={{ fontWeight:600, fontSize:'0.85rem', color:'var(--gray-900)' }}>{catA.shortDesc}</span>
+        <div style={{ display:'flex', alignItems:'flex-start', gap:6, flex:'1 1 0' }}>
+          <div style={{ width:9, height:9, borderRadius:'50%', background:catA.color, flexShrink:0, marginTop:'3px' }} />
+          <div>
+            <div style={{ fontWeight:600, fontSize:'0.95rem', color:'var(--gray-900)' }}>{catA.name}</div>
+            <div style={{ fontSize:'0.82rem', color:'var(--gray-500)', marginTop:'2px' }}>{catA.shortDesc}</div>
+          </div>
         </div>
-        <div style={{ display:'flex', alignItems:'center', gap:6, flex:'1 1 0', flexDirection:'row-reverse', textAlign:'right' }}>
-          <div style={{ width:9, height:9, borderRadius:'50%', background:catB.color, flexShrink:0 }} />
-          <span style={{ fontWeight:600, fontSize:'0.85rem', color:'var(--gray-900)' }}>{catB.shortDesc}</span>
+        <div style={{ display:'flex', alignItems:'flex-start', gap:6, flex:'1 1 0', flexDirection:'row-reverse', textAlign:'right' }}>
+          <div style={{ width:9, height:9, borderRadius:'50%', background:catB.color, flexShrink:0, marginTop:'3px' }} />
+          <div>
+            <div style={{ fontWeight:600, fontSize:'0.95rem', color:'var(--gray-900)' }}>{catB.name}</div>
+            <div style={{ fontSize:'0.82rem', color:'var(--gray-500)', marginTop:'2px' }}>{catB.shortDesc}</div>
+          </div>
         </div>
       </div>
       <div className="slider-track-wrap" ref={trackRef} onMouseDown={startDrag}>
@@ -225,14 +232,20 @@ function DemoSlider() {
       <div className="slider-direction">
         <span style={{ color:catA.color, fontSize:'0.75rem', fontWeight:500 }}>← {catA.name.split(' ')[0]}</span>
         <span style={{ color:'var(--gray-400)', fontSize:'0.7rem', fontWeight:400 }}>
-          tap center = equal
+          drag or tap any number
         </span>
         <span style={{ color:catB.color, fontSize:'0.75rem', fontWeight:500 }}>{catB.name.split(' ')[0]} →</span>
       </div>
-      <div className="slider-result" style={{ color: val===0 ? 'var(--gray-500)' : color }}>
-        {val === 0
-          ? 'Both are equally important'
-          : <span><strong>{left ? catA.name : catB.name}</strong>{' is '}<strong style={{ fontSize:'1.05em' }}>~{saaty[idx]}×</strong>{' more important'}</span>}
+      <div className="slider-result">
+        <div style={{ fontWeight:600, color: val===0 ? 'var(--gray-900)' : color }}>
+          {val === 0 ? 'Both are equally important'
+            : `${levelWords[idx]} prefer ${left ? catA.name : catB.name}`}
+        </div>
+        <div style={{ fontSize:'0.8rem', color:'var(--gray-500)', marginTop:'0.2rem', lineHeight:1.5 }}>
+          {val === 0
+            ? 'Middle is perfectly valid — move left or right only if you genuinely feel one outweighs the other.'
+            : `Weights ${left ? catA.name : catB.name} ${saaty[idx]}× higher than ${left ? catB.name : catA.name} in the analysis.`}
+        </div>
       </div>
     </div>
   );
@@ -242,9 +255,9 @@ function ExplanationScreen({ relationship, onNext }) {
   const isCitizen = RELATIONSHIP_OPTIONS.find(r => r.label === relationship)?.citizen ?? true;
 
   return (
-    <div className="field-layout" style={{ textAlign:'left' }}>
-      <div style={{ background:'var(--green-50)', borderRadius:16, padding:'clamp(1.5rem,4vw,2.5rem)',
-        maxWidth:600, width:'100%', border:'1px solid var(--green-100)' }}>
+    <div className="field-layout" style={{ textAlign:'left', maxWidth:720 }}>
+      <div style={{ background:'var(--green-50)', borderRadius:16, padding:'clamp(1.5rem,4vw,2.75rem)',
+        width:'100%', border:'1px solid var(--green-100)' }}>
 
         <h2 style={{ fontSize:'clamp(1.3rem,3vw,1.75rem)', fontWeight:700, color:'var(--green-900)',
           marginBottom:'1.25rem', lineHeight:1.3 }}>
@@ -263,16 +276,12 @@ function ExplanationScreen({ relationship, onNext }) {
         </p>
 
         <div style={{ background:'#fff', border:'1px solid var(--green-100)', borderRadius:12,
-          padding:'1.25rem 1rem 1rem', marginBottom:'1rem' }}>
+          padding:'1.5rem 1.25rem 1.25rem', marginBottom:'1rem' }}>
           <p style={{ fontSize:'0.8rem', fontWeight:600, color:'var(--gray-500)',
             textTransform:'uppercase', letterSpacing:'0.04em', marginBottom:'0.75rem' }}>
             Try it
           </p>
           <DemoSlider />
-          <p style={{ fontSize:'0.82rem', color:'var(--gray-500)', marginTop:'1rem', marginBottom:0, lineHeight:1.6 }}>
-            <strong style={{ color:'var(--gray-700)' }}>Middle is perfectly valid</strong> — it means both matter equally.
-            Drag further only when you <strong style={{ color:'var(--gray-700)' }}>genuinely feel</strong> one outweighs the other.
-          </p>
         </div>
 
         <button className="btn-primary" onClick={onNext}

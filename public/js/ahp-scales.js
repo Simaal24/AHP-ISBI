@@ -1,17 +1,29 @@
 function CatCard({ cat, side, small }) {
   const isRight = side === 'right';
   return (
-    <div className="cat-card" style={{ display:'flex', alignItems:'center', gap: small ? 7 : 10,
+    <div className="cat-card" style={{
+      display:'flex', alignItems:'flex-start', gap: small ? 9 : 10,
       flexDirection: small && isRight ? 'row-reverse' : 'row',
       textAlign: small && isRight ? 'right' : 'left',
-      flex: small ? '1 1 0' : 'unset', minWidth:0, position:'relative' }}>
-      <div style={{ width: small ? 9 : 14, height: small ? 9 : 14, borderRadius:'50%',
-        background: cat.color, flexShrink:0, opacity:0.85 }} />
+      flex: small ? '1 1 0' : 'unset', minWidth:0, position:'relative',
+      background: small ? 'var(--green-50)' : 'transparent',
+      border: small ? '1px solid var(--green-100)' : 'none',
+      borderRadius: small ? 12 : 0,
+      padding: small ? '0.75rem 0.9rem' : 0,
+    }}>
+      <div style={{ width: small ? 10 : 14, height: small ? 10 : 14, borderRadius:'50%',
+        background: cat.color, flexShrink:0, opacity:0.9, marginTop: small ? '0.25rem' : '0.35rem' }} />
       <div style={{ minWidth:0 }}>
-        <div style={{ fontWeight:600, fontSize: small ? '0.85rem' : 'clamp(0.95rem,2vw,1.1rem)',
+        <div style={{ fontWeight:600, fontSize: small ? '0.92rem' : 'clamp(0.95rem,2vw,1.1rem)',
           color:'var(--gray-900)', lineHeight:1.3 }}>
-          {cat.shortDesc || cat.name}
+          {cat.name}
         </div>
+        {cat.shortDesc && (
+          <div style={{ fontSize: small ? '0.8rem' : '0.82rem', color:'var(--gray-500)',
+            marginTop:'0.25rem', lineHeight:1.45, fontWeight:400 }}>
+            {cat.shortDesc}
+          </div>
+        )}
       </div>
     </div>
   );
@@ -32,6 +44,7 @@ function ComparisonHeader({ catA, catB, pairIndex, totalPairs }) {
 }
 
 function GradientSlider({ catA, catB, pairIndex, totalPairs, value, onChange, isCitizen }) {
+  const levelWords = ['Extremely', 'Very strongly', 'Strongly', 'Slightly', null, 'Slightly', 'Strongly', 'Very strongly', 'Extremely'];
   const trackRef = React.useRef(null);
   const sliderBodyRef = React.useRef(null);
   const prevPairIndexRef = React.useRef(null);
@@ -162,13 +175,13 @@ React.useEffect(() => { localValRef.current = localVal; }, [localVal]);
         </div>
         <div className="slider-direction">
           <span style={{ color:catA.color, fontSize:'0.75rem', fontWeight:500 }}>← {catA.name.split(' & ')[0]}</span>
-          {pairIndex === 0 && <span style={{ color:'var(--gray-400)', fontSize:'0.7rem', fontWeight:400,
+          {pairIndex < 2 && <span style={{ color:'var(--gray-400)', fontSize:'0.7rem', fontWeight:400,
             opacity: touched ? 0 : 1, transition:'opacity 0.3s ease' }}>
-            tap center = equal
+            drag or tap any number
           </span>}
           <span style={{ color:catB.color, fontSize:'0.75rem', fontWeight:500 }}>{catB.name.split(' & ')[0]} →</span>
         </div>
-        <div className="slider-result" style={{ color: localVal === 0 ? 'var(--gray-500)' : gradientColor }}>
+        <div className="slider-result">
           {confirmed ? (
             <span className="slider-confirmed">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--green-600)"
@@ -178,14 +191,19 @@ React.useEffect(() => { localValRef.current = localVal; }, [localVal]);
               </svg>
               Recorded
             </span>
-          ) : localVal === 0
-            ? "Both are equally important"
-            : <span>
-                <strong>{isLeft ? catA.name : catB.name}</strong>
-                {' is '}
-                <strong style={{ fontSize:'1.05em' }}>~{saaty[currentIdx]}×</strong>
-                {' more important'}
-              </span>}
+          ) : (
+            <React.Fragment>
+              <div style={{ fontWeight:600, color: localVal === 0 ? 'var(--gray-900)' : gradientColor }}>
+                {localVal === 0 ? 'Both are equally important'
+                  : `${levelWords[currentIdx]} prefer ${isLeft ? catA.name : catB.name}`}
+              </div>
+              <div style={{ fontSize:'0.8rem', color:'var(--gray-500)', marginTop:'0.2rem', lineHeight:1.5 }}>
+                {localVal === 0
+                  ? 'Both will carry equal weight. Move the slider if you feel one genuinely matters more.'
+                  : `Assigns ${isLeft ? catA.name : catB.name} roughly ${saaty[currentIdx]}× more weight than ${isLeft ? catB.name : catA.name} in your profile.`}
+              </div>
+            </React.Fragment>
+          )}
         </div>
       </div>
     </div>
